@@ -1,0 +1,38 @@
+:root {
+	--clemson-orange:#F66733;
+	--regalia:#522D80;
+	--fort-hill:#FFFFFF;
+	--tillman-brick:#A25016;
+	--howards-rock:#685C53;
+	--innovation:#86898C;
+	--blue-ridge:#3A4958;
+	--centennial-oak:#562E19;
+	--hartwell-moon:#D4C99E;
+}
+
+.page-header{
+	color: var(--fort-hill);
+	background-color: var(--clemson-orange);
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	margin-bottom: 2rem;
+}
+
+.btn-clemson {
+	color: var(--fort-hill);
+	background-color: var(--clemson-orange);
+	border-color: var(--clemson-orange);
+}
+
+.card-clemson .card-header{
+	background-color: var(--regalia);
+	color: var(--fort-hill);
+}
+
+.card-clemson .card-block{
+	background-color: rgba(134, 137, 140, 0.1);
+}
+
+.btn-large{
+	width: 100%
+}
