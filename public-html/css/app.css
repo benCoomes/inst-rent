@@ -24,8 +24,8 @@
 	border-color: var(--clemson-orange);
 }
 
-.card-clemson .card-header{
-	background-color: var(--regalia);
+h5.card-clemson .card-header{
+	background-color: rgba(82, 45, 128, 1);
 	color: var(--fort-hill);
 }
 
