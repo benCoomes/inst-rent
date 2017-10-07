@@ -1,6 +1,7 @@
 :root {
 	--clemson-orange:#F66733;
 	--regalia:#522D80;
+	--regalia-light:rgba(82,45,128,0.1);
 	--fort-hill:#FFFFFF;
 	--tillman-brick:#A25016;
 	--howards-rock:#685C53;
@@ -24,15 +25,15 @@
 	border-color: var(--clemson-orange);
 }
 
-h5.card-clemson .card-header{
-	background-color: rgba(82, 45, 128, 1);
+.jumbotron-clemson{
+	background-color: var(--regalia-light);
+}
+
+.card-clemson .card-header{
+	background-color: rgba(82, 45, 128, 0.8);
 	color: var(--fort-hill);
 }
 
-.card-clemson .card-block{
-	background-color: rgba(134, 137, 140, 0.1);
-}
-
-.btn-large{
-	width: 100%
+.card-clemson .card-body{
+	background-color: var(--regalia-light);
 }
