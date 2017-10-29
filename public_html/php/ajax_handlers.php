@@ -30,6 +30,16 @@ class AjaxHandler{
   // create connection and errors array
   function __construct($configLoc){
     // connect to mysql datbase here, set conn to connection 
+    $configFile = fopen($configLoc, "r") or die ('error : Could not find db configuration file.');
+    $config = json_decode(fread($configFile, filesize($configLoc)), true);
+    fclose($configFile);
+
+    $conn = new mysqli($config["host"], $config["username"], $config["password"]);
+
+    if($conn->connect_error){
+      die("Connection failed: ".$conn->connect_error);
+    }
+    echo "Connected succesfully.";
   }
 
   /*****************************************
@@ -72,14 +82,14 @@ class AjaxHandler{
 ********************************************/
 
 // check for required qs variables
-requireQSV("action");
+//requireQSV("action");
 
 // get query string variables
-$action = $_GET["action"];
+//$action = $_GET["action"];
 
 // process action with AjaxHandler instance
 $ajaxHandler = new AjaxHandler('../../config/dbconfig.json');
-$ajaxHandler->doAction($action);
+//$ajaxHandler->doAction($action);
 
 
 ?>
