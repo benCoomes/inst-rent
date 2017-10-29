@@ -29,7 +29,6 @@ class AjaxHandler{
 
   // create connection and errors array
   function __construct($configLoc){
-    // connect to mysql datbase here, set conn to connection 
     $configFile = fopen($configLoc, "r") or die ('error : Could not find db configuration file.');
     $config = json_decode(fread($configFile, filesize($configLoc)), true);
     fclose($configFile);
