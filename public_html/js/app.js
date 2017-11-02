@@ -22,8 +22,8 @@ app.controller('mainCtrl', function mainCtrl($scope, $http, $httpParamSerializer
     'cuid' : '',
     'cuEmail' : '',
     'username' : '',
-    'firstname' : '',
-    'lastname' : '',
+    'firstName' : '',
+    'lastName' : '',
     'password' : '',
     'passwordConfirm' : ''
   }
@@ -43,10 +43,10 @@ app.controller('mainCtrl', function mainCtrl($scope, $http, $httpParamSerializer
     })
     .then(function onSuccess(result){
       // do things with result on success
-      console.log("Sign in success");
+      console.log(result.data);
     }, function onError(result){
       // do things with result on error
-      console.log("Sign in failure");
+      console.log(result.data);
     })
   }
 
@@ -62,10 +62,10 @@ app.controller('mainCtrl', function mainCtrl($scope, $http, $httpParamSerializer
     })
     .then(function onSuccess(result){
       // do things with result on success
-      console.log("Sign up success!");
+      console.log(result.data);
     }, function onError(result){
       // do things with result on error
-      console.log("Sign up failure.");
+      console.log(result.data);
     })
   }
 });
