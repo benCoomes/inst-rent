@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="inst_rent">
 <head>
   <title>CUIR</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Angular --> 
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
 
   <!-- bootstrap & dependencies (jquery and popper) --> 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
@@ -15,7 +17,7 @@
   <!-- custom css -->
   <link rel="stylesheet" href="css/app.css">
 </head>
-<body>
+<body ng-controller="mainCtrl">
   <div class="page-header">
     <div class="container">
       <h1>Clemson University Instrument Rentals</h1>
@@ -24,7 +26,7 @@
 
 	<div class="container">
     <div id="info-bar" class="jumbotron jumbotron-clemson"> 
-      <h2>Lorum Ipsum Dolor Sit Amit.</h2>
+      <h2>{{informationalTitle}}</h2>
       <p>Phasellus at egestas nisi. Nunc posuere sagittis ultrices. Vestibulum molestie odio et velit malesuada, at egestas ante congue. Ut euismod leo turpis, id finibus eros volutpat at. Suspendisse at lectus vel leo fermentum ultricies. Nam nec vulputate lectus. Fusce ligula massa, ultrices ut neque ac, iaculis imperdiet lorem. Proin facilisis egestas lorem, non pretium lectus porttitor vel. Vestibulum ac quam iaculis, aliquam mauris ut, hendrerit nisi. Phasellus eget mauris non mauris vulputate ullamcorper a id nunc. Quisque semper nulla vitae dui convallis lobortis. Suspendisse potenti. Donec interdum non libero congue gravida. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     </div>
   </div>
@@ -35,22 +37,20 @@
         <div class="card card-clemson mb-3">
           <h5 class="card-header">Sign In</h5>
           <div class="card-body">
-            <form class="form" id="si-form">
+            <form class="form" id="si-form" ng-submit="submitSignInForm()">
               <div class="form-group row">
                 <label for="si-username" class="col-md-4 col-form-label">Username</label>
                 <div class="col-md-8">
-                  <input type="text" id="si-username" class="form-control">
+                  <input type="text" id="si-username" class="form-control" ng-model="signInForm.username">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="si-password" class="col-md-4 col-form-label">Password</label>
                 <div class="col-md-8">
-                  <input type="password" id="si-password" class="form-control">
+                  <input type="password" id="si-password" class="form-control" ng-model="signInForm.password">
                 </div>
               </div>
-              <a href="signin.html">
-                <button type="button" class="btn btn-clemson">Sign In</button>
-              </a>
+              <input type="submit" value="Sign In" class="btn btn-clemson">
             </form>
           </div>
         </div>
@@ -59,57 +59,57 @@
         <div class="card card-clemson mb-3">
           <h5 class="card-header">Sign Up</h5>
           <div class="card-body">
-            <form class="form" id="su-form">
+            <form class="form" id="su-form" ng-submit="submitSignUpForm()">
               <div class="form-group row">
                 <label for="su-cuid" class="col-md-4 col-form-label">CUID</label>
                 <div class="col-md-8">
-                  <input type="" id="su-cuid" class="form-control">
+                  <input type="" id="su-cuid" class="form-control" ng-model="signUpForm.cuid">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="su-email" class="col-md-4 col-form-label">Clemson Email</label>
                 <div class="col-md-8">
-                  <input type="" id="su-email" class="form-control">
+                  <input type="" id="su-email" class="form-control" ng-model="signUpForm.cuEmail">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="su-username" class="col-md-4 col-form-label">Username</label>
                 <div class="col-md-8">
-                  <input type="text" id="su-username" class="form-control">
+                  <input type="text" id="su-username" class="form-control" ng-model="signUpForm.username">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="su-fname" class="col-md-4 col-form-label">First Name</label>
                 <div class="col-md-8">
-                  <input type="" id="su-fname" class="form-control">
+                  <input type="text" id="su-fname" class="form-control" ng-model="signUpForm.firstname">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="su-lname" class="col-md-4 col-form-label">Last Name</label>
                 <div class="col-md-8">
-                  <input type="" id="su-lname" class="form-control">
+                  <input type="text" id="su-lname" class="form-control" ng-model="signUpForm.lastname">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="su-password" class="col-md-4 col-form-label">Password</label>
                 <div class="col-md-8">
-                  <input type="password" id="su-password" class="form-control">
+                  <input type="password" id="su-password" class="form-control" ng-model="signUpForm.password">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="su-confirm-password" class="col-md-4 col-form-label">Confirm Password</label>
                 <div class="col-md-8">
-                  <input type="password" id="su-confirm-password" class="form-control">
+                  <input type="password" id="su-confirm-password" class="form-control" ng-model="signUpForm.passwordConfirm">
                 </div>
               </div>
-              <a href="signup.html">
-                <button type="button" class="btn btn-clemson">Sign Up</button>
-              </a>
+              <input type="submit" value="Sign Up" class="btn btn-clemson">
             </form>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script src="js/app.js"></script>
 </body>
 </html>

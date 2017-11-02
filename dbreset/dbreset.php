@@ -2,7 +2,7 @@
 
 
 // create connection and errors array
-$configLoc = "../config/dbconfig.json";
+$configLoc = "../config/instrentdev.json";
 $configFile = fopen($configLoc, "r") or die ('error : Could not find db configuration file.');
 $config = json_decode(fread($configFile, filesize($configLoc)), true);
 fclose($configFile);
