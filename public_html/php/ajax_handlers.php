@@ -1,4 +1,6 @@
 <?php 
+session_start();
+
 
 /***********************************
   Utility Functions
@@ -19,6 +21,8 @@ function requireQSV($qsv){
     die('Error: The query string variable '.$qsv.' is not present.');
   }
 }
+
+//TODO: create require Post Variable
 
 /*************************************
   Classes
@@ -69,16 +73,49 @@ class AjaxHandler{
     $config = json_decode(fread($configFile, filesize($configLoc)), true);
     fclose($configFile);
 
-    $conn = new mysqli($config["host"], $config["username"], $config["password"]);
+    // for testing when not on Campus. must be on intranet to connect to db
+    $onCampus = False;
 
-    if($conn->connect_error){
-      $response = new Response();
-      $response->setMessage('Failed to connect to database');
-      $response->setStatus('Error');
-      $response->setData([]);
-      die($response->toJson());
+    if($onCampus){
+      $conn = new mysqli($config["host"], $config["username"], $config["password"]);
+
+      if($conn->connect_error){
+        $response = new Response();
+        $response->setMessage('Failed to connect to database');
+        $response->setStatus('Error');
+        $response->setData([]);
+        die($response->toJson());
+      }
     }
   }
+
+  /*****************************************
+    Helper Methods
+  ****************************************/
+  /*
+    Check DB for username, password combination
+    return True if found
+    return False otherwise
+  */
+  private function isUser($username, $password){
+    // fake implementation for testing
+    if($username == 'bcoomes' && $password == 'password'){
+      return True;
+    } else {
+      return False;
+    }
+  }
+
+  /*
+    Get user role, cuid for row with username = $username
+  */
+  private function startUserSession($username){
+    // fake implementation for testing
+      $_SESSION['username'] = $username;
+      $_SESSION['role'] = 'user';
+      $_SESSION['cuid'] = 'C1234567';
+  }
+
 
   /*****************************************
     Action Methods
@@ -93,21 +130,61 @@ class AjaxHandler{
     print $response->toJson();
   }
 
-  private function signIn(){
-    // validate credentials against database.
-    $response = new Response(
-      'Success',
-      'Sign In function called',
-      [
-        'username' => $_POST['username'],
-        'password' => $_POST['password']
-      ]
-    );
+
+  /*
+    Expects: 
+      Post with variables 'username' and 'password'
+    Success:
+      Condition: User with 'username' and 'password' exists
+      Status Code: 200
+      Data: username, role
+    Failure (bad credentials):
+      Status Code: 401
+      Data: username
+  */
+  private function signIn($username, $password){
+    $status = '';
+    $msg = '';
+    $data = [
+        'username' => $username
+    ];
+
+    $isUser = $this->isUser($username, $password);
+    
+    if($isUser){
+      $this->startUserSession($username);
+
+      $status = 'Success';
+      $msg = 'User signed in.';
+      $data['role'] = $_SESSION['role'];
+    } else {
+      $status = 'Error';
+      $msg = 'Could not find user in database.';
+      http_response_code(401);
+    }
+
+
+    $response = new Response($status, $msg, $data);
     print $response->toJson();
   }
 
+
+  /*
+    Expects: 
+      Post with variables:
+        'cuid', 'cuEmail', 'username', 'firstName',
+        'lastName', 'password', 'passwordConfirm'
+    Success: 
+      Condition: User entry is created in db. User is signed in.
+      Response Code: 200
+      Data: username, role
+    Error: 
+      Condition: User session is active. Username is taken.
+        Password is invalid. Email is not valid. CUID is taken or invalid.
+      Response Code: 400
+  */
   private function signUp(){
-    // try to create credentials in the database.
+    // fake method for testing
     $response = new Response(
       'Success',
       'Sign Up function called.',
@@ -121,6 +198,24 @@ class AjaxHandler{
         'passwordConfirm' => $_POST['passwordConfirm']
       ]
     );
+
+    print $response->toJson();
+  }
+
+  private function signOut(){
+    $_SESSION = array();
+
+    if(ini_get("session.use_cookies")){
+      $params = session_get_cookie_params();
+      setcookie(session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+      );
+    }
+
+    session_destroy();
+
+    $response = new Response('Success', 'User logged out');
     print $response->toJson();
   }
 
@@ -145,11 +240,16 @@ class AjaxHandler{
         break;
 
       case "sign_in":
-        $this->signIn();
+        // TODO: check for PVs here
+        $this->signIn($_POST['username'], $_POST['password']);
         break;
 
       case "sign_up":
         $this->signUp();
+        break;
+
+      case "sign_out":
+        $this->signOut();
         break;
 
       default:

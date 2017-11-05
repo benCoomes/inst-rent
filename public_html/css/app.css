@@ -25,6 +25,12 @@
 	border-color: var(--clemson-orange);
 }
 
+.btn-clemson-alt {
+	color: var(--fort-hill);
+	background-color: var(--regalia);
+	border-color: var(--regalia);
+}
+
 .jumbotron-clemson{
 	background-color: var(--regalia-light);
 }
