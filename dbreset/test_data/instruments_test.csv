@@ -1,0 +1,11 @@
+serial_no,type,condition
+SN0001,trumpet,good
+SN0002,trumpet,good
+SN0003,trumpet,fair
+SN0004,clarinet,fair
+SN0005,flute,poor
+SN0006,french horn,poor
+SN0007,tuba,new
+SN0008,tuba,good
+SN0009,saxophone,good
+SN0010,sousaphone,needs repair

@@ -1,0 +1,11 @@
+cuid,username,password,role,email,first_name,last_name
+1000000,jhopkins,password1,student,jhopkins@g.clemson.edu,John,Hopkins
+2000000,sfields,password2,student,sfields@g.clemson.edu,Susan,Fields
+3000000,cjwest,password3,student,cjwest@g.clemson.edu,Chris,West
+4000000,bcoomes,password4,student,bcoomes@g.clemson.edu,Ben,Coomes
+5000000,wbuffet,notunique,manager,wbuffet@g.clemson.edu,Warren,Buffet
+6000000,dvadar,notunique,manager,dvadar@g.clemson.edu,Darth,Vadar
+7000000,smario,password5,admin,smario@g.clemson.edu,Super,Mario
+8000000,tmorris,password6,student,tmorris@g.clemson.edu,Tony,Morris
+9000000,sadams,password7,student,sadams@g.clemson.edu,Sam,Adams
+9999999,sfalls,password8,student,sfalls@g.clemson.edu,Sarah,McFalls
