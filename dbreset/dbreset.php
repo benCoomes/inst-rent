@@ -57,6 +57,23 @@ echo "Connected succesfully.";
 
 
 // load data from files into tables
-
-
+	$query1 = "LOAD DATA INFILE 'filename' 
+			INTO TABLE tblname
+			COLUMNS TERMINATED BY 
+			LINES TERMINATED BY ;"  
+	$query2 = "LOAD DATA INFILE 'filename' 
+			INTO TABLE tblname
+			COLUMNS TERMINATED BY 
+			LINES TERMINATED BY ;"
+	$query3 = "LOAD DATA INFILE 'filename' 
+			INTO TABLE tblname
+			COLUMNS TERMINATED BY 
+			LINES TERMINATED BY ;"
+	$result1 = mysql_query($query1);
+	$result2 = mysql_query($query2);
+	$result3 = mysql_query($query3);
+	if(!($result1 & $result2 & $result3)) {
+		die("failed to read data in from the files in the database: ".mysql_error());
+	}
+	
 ?>
