@@ -121,6 +121,31 @@ class AjaxHandler{
     Action Methods
   ****************************************/
 
+  private function getSession(){
+    $response = new Response();
+    if(array_key_exists('cuid', $_SESSION)){
+      $response->setStatus('Success');
+      $response->setMsg('Session data retrieved.');
+      $response->setData([
+        'username' => $_SESSION['username'],
+        'role' => $_SESSION['role'],
+        'cuid' => $_SESSION['cuid'],
+        'signedIn' => True
+      ]);
+    } else {
+      $response->setStatus('Success');
+      $response->setMsg('No session data');
+      $response->setData([
+        'username' => Null,
+        'role' => Null,
+        'cuid' => Null,
+        'signedIn' => False
+      ]);
+    }
+
+    print $response->toJson();
+  }
+
   private function getInstruments(){
     // get instrumets from database, return as json
     $response = new Response(
@@ -235,6 +260,10 @@ class AjaxHandler{
 
   public function doAction($action){
     switch($action){
+      case "get_session":
+        $this->getSession();
+        break;
+
       case "get_instruments":
         $this->getInstruments();
         break;
