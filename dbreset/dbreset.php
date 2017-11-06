@@ -56,19 +56,21 @@ echo "Connected succesfully.";
 
 
 
-// load data from files into tables
-	$query1 = "LOAD DATA INFILE 'filename' 
-			INTO TABLE tblname
-			COLUMNS TERMINATED BY 
-			LINES TERMINATED BY ;"  
-	$query2 = "LOAD DATA INFILE 'filename' 
-			INTO TABLE tblname
-			COLUMNS TERMINATED BY 
-			LINES TERMINATED BY ;"
-	$query3 = "LOAD DATA INFILE 'filename' 
-			INTO TABLE tblname
-			COLUMNS TERMINATED BY 
-			LINES TERMINATED BY ;"
+// load data from files into tables need to change delimiters, - don't think this will work. files are not 
+	// on same computer as server. will probably have to go line by line and 
+	// generate queries for each row. 
+	$query1 = "LOAD DATA INFILE 'test_data/instruments_test.csv' 
+			INTO TABLE instruments
+			COLUMNS TERMINATED BY ','
+			LINES TERMINATED BY '\n'"  
+	$query2 = "LOAD DATA INFILE 'test_data/users_test.csv' 
+			INTO TABLE users
+			COLUMNS TERMINATED BY ','
+			LINES TERMINATED BY '\n'"
+	$query3 = "LOAD DATA INFILE 'test_data/rental_contracts.csv' 
+			INTO TABLE rental_contracts
+			COLUMNS TERMINATED BY ','
+			LINES TERMINATED BY '\n'"
 	$result1 = mysql_query($query1);
 	$result2 = mysql_query($query2);
 	$result3 = mysql_query($query3);
