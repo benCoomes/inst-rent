@@ -12,53 +12,54 @@ $conn = new mysqli($config["host"], $config["username"], $config["password"], $c
 if($conn->connect_error){
   die("Connection failed: ".$conn->connect_error);
 }
-echo "Connected succesfully.";
-
 
 // drop all current tables
-	$query1 = "DROP TABLE IF EXISTS users";
-	$query2 = "DROP TABLE IF EXISTS instruments";
-	$query3 = "DROP TABLE IF EXISTS rental_contracts";
-	$result1 = $conn->query($query1);
-	$result2 = $conn->query($query2);
-	$result3 = $conn->query($query3);
-	if(!($result1 & $result2 & $result3)) 
-	{
-		die("Failed to get rid of old tables: ".$conn->error);
-	}
+	$query1 = "DROP TABLE IF EXISTS active_contracts";
+   $query2 = "DROP TABLE IF EXISTS pending_contracts";
+	$query3 = "DROP TABLE IF EXISTS users";
+	$query4 = "DROP TABLE IF EXISTS instruments";
+   
+   $conn->query($query1) or die("Failed to delete table: ".$conn->error);
+   $conn->query($query2) or die("Failed to delete table: ".$conn->error);
+   $conn->query($query3) or die("Failed to delete table: ".$conn->error);
+   $conn->query($query4) or die("Failed to delete table: ".$conn->error);
 
 
 // create new tables	
 	$query1 = "CREATE TABLE users(
-		cuid int, 
-		username varchar(20),
-		password varchar(20),
-      role enum('student','manager','admin'),
-		first_name varchar(20),
-		last_name varchar(20),
-		email varchar(20))";
+		cuid int PRIMARY KEY NOT NULL, 
+		username varchar(20) UNIQUE NOT NULL,
+		password varchar(20) NOT NULL,
+      role enum('student','manager','admin') NOT NULL,
+		first_name varchar(20) NOT NULL,
+		last_name varchar(20) NOT NULL,
+		email varchar(20) UNIQUE NOT NULL)";
 	$query2 = "CREATE TABLE instruments(
-		serial_no varchar(20),
-		type varchar(20),
-		cond varchar(20))";
-	$query3 = "CREATE TABLE rental_contracts(
-		start_date date,
-		end_date date,
-		cuid int,
-		serial_no varchar(20),
-		confirmed enum('true', 'false'))";
-	$result1 = $conn->query($query1);
-	$result2 = $conn->query($query2);
-	$result3 = $conn->query($query3);
-	if(!($result1 & $result2 & $result3)) {
-		die("failed to create new tables in the database: ".$conn->error);
-	}
+		serial_no varchar(20) PRIMARY KEY NOT NULL,
+		type varchar(20) NOT NULL,
+		cond enum('needs repair','poor','fair','good','new') NOT NULL)";
+	$query3 = "CREATE TABLE active_contracts(
+		start_date date NOT NULL,
+		end_date date NOT NULL,
+		cuid int NOT NULL,
+		serial_no varchar(20) NOT NULL,
+      CONSTRAINT PK_active_contracts PRIMARY KEY (serial_no),
+      FOREIGN KEY (serial_no) REFERENCES instruments(serial_no),
+      FOREIGN KEY (cuid) REFERENCES users(cuid))";
+   $query4 = "CREATE TABLE pending_contracts(
+      start_date date NOT NULL,
+      end_date date NOT NULL,
+      cuid int NOT NULL,
+      serial_no varchar(20) NOT NULL,
+      CONSTRAINT PK_pending_contracts PRIMARY KEY (serial_no,cuid),
+      FOREIGN KEY (serial_no) REFERENCES instruments(serial_no),
+      FOREIGN KEY (cuid) REFERENCES users(cuid))";
+   $conn->query($query1) or die("Failed to create table: ".$conn->error);
+   $conn->query($query2) or die("Failed to create table: ".$conn->error);
+   $conn->query($query3) or die("Failed to create table: ".$conn->error);
+   $conn->query($query4) or die("Failed to create table: ".$conn->error);
 
-
-
-// load data from files into tables need to change delimiters, - don't think this will work. files are not 
-	// on same computer as server. will probably have to go line by line and 
-	// generate queries for each row. 
+// populate new tables with test data set
 	$query1 = "INSERT INTO users (cuid,username,password,role,email,first_name,last_name) VALUES
 		(1000000,'jhopkins','password1','student','jhopkins@g.clemson.edu','John','Hopkins'),
 		(2000000,'sfields','password2','student','sfields@g.clemson.edu','Susan','Fields'),
@@ -78,23 +79,24 @@ echo "Connected succesfully.";
 		('SN0005','flute','poor'),
 		('SN0006','french horn','poor'),
 		('SN0007','tuba','new'),
-		('SN0008','tuba','good'),
-		('SN0009','saxophone','good'),
-		('SN0010','sousaphone','needs repair')";
-	$query3 = "INSERT INTO rental_contracts(start_date,end_date,cuid,serial_no,confirmed) VALUES
-		('2017-08-01','2017-12-01',1000000,'SN0001','true'),
-		('1999-01-01','2050-01-01',3000000,'SN0002','true'),
-		('2018-01-16','2018-05-05',1000000,'SN0001','false'),
-		('2017-08-01','2017-12-01',8000000,'SN0001','false'),
-		('2016-08-22','2020-05-10',9999999,'SN0008','true'),
-		('2017-10-13','2017-10-30',9000000,'SN0008','false'),
-		('2014-01-12','2014-12-13',2000000,'SN0009','true'),
-		('2018-02-14','2018-10-09',4000000,'SN0010','false')";
-	$result1 = $conn->query($query1);
-	$result2 = $conn->query($query2);
-	$result3 = $conn->query($query3);
-	if(!($result1 & $result2 & $result3)) {
-		die("failed to read data in from the files in the database: ".$conn->error);
-	}
-	
+      ('SN0008','tuba','good'),
+      ('SN0009','saxophone','good'),
+      ('SN0010','sousaphone','needs repair')";
+   $query3 = "INSERT INTO active_contracts(start_date,end_date,cuid,serial_no) VALUES
+      ('2017-08-01','2017-12-01',1000000,'SN0001'),
+      ('1999-01-01','2050-01-01',3000000,'SN0002'),
+      ('2016-08-22','2020-05-10',9999999,'SN0008'),
+      ('2014-01-12','2014-12-13',2000000,'SN0009')";
+   $query4 = "INSERT INTO pending_contracts(start_date, end_date, cuid, serial_no) VALUES 
+      ('2018-01-16','2018-05-05',1000000,'SN0001'),
+      ('2017-08-01','2017-12-01',8000000,'SN0001'),
+      ('2017-10-13','2017-10-30',9000000,'SN0008'),
+      ('2018-02-14','2018-10-09',4000000,'SN0010')";
+   $conn->query($query1) or die("Failed to populate table: ".$conn->error);
+   $conn->query($query2) or die("Failed to populate table: ".$conn->error);
+   $conn->query($query3) or die("Failed to populate table: ".$conn->error);
+   $conn->query($query4) or die("Failed to populate table: ".$conn->error);
+
+   echo "Success.\n";
+
 ?>
