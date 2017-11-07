@@ -33,11 +33,12 @@ echo "Connected succesfully.";
 		cuid int, 
 		username varchar(20),
 		password varchar(20),
+      role enum('student','manager','admin'),
 		first_name varchar(20),
 		last_name varchar(20),
 		email varchar(20))";
 	$query2 = "CREATE TABLE instruments(
-		serial_no int,
+		serial_no varchar(20),
 		type varchar(20),
 		cond varchar(20))";
 	$query3 = "CREATE TABLE rental_contracts(
