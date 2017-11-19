@@ -6,6 +6,10 @@ angular.module('instRent', [
   'instRent.userHome',
   'instRent.managerHome', 
   'instRent.adminHome',
+  'instRent.addInstrument',
+  'instRent.contracts',
+  'instRent.manageUsers',
+  'instRent.addUser',
   'instRent.header'
 ])
 
@@ -20,7 +24,7 @@ angular.module('instRent', [
     });
   };
 
-  return { getSession : getSession};
+  return {getSession : getSession};
 });
 
 
