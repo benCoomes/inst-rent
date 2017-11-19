@@ -16,7 +16,6 @@
 	background-color: var(--clemson-orange);
 	padding-top: 1rem;
 	padding-bottom: 1rem;
-	margin-bottom: 2rem;
 }
 
 .btn-clemson {
@@ -26,9 +25,9 @@
 }
 
 .btn-clemson-alt {
-	color: var(--fort-hill);
-	background-color: var(--regalia);
-	border-color: var(--regalia);
+  color: var(--blue-ridge);
+  background-color: var( --hartwell-moon);
+  border-color: var( --hartwell-moon);
 }
 
 .jumbotron-clemson{
@@ -42,4 +41,8 @@
 
 .card-clemson .card-body{
 	background-color: var(--regalia-light);
+}
+
+.custom-navbar{
+	background-color: var(--blue-ridge);
 }

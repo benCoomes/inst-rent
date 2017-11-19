@@ -1,7 +1,9 @@
 angular.module('instRent.header', [])
 
 .controller('HeaderCtrl', function HeaderCtrl($scope, $rootScope, sessionLoader, $location, $http, $httpParamSerializerJQLike){
-  $scope.title = 'Clemson Uni Inst Rent';
+  $scope.title = 'Clemson Instrument Rentals';
+
+  $scope.brand = "CUIR";
   
   $scope.signOut = function() {
     $http({

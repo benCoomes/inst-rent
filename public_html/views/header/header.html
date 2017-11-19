@@ -1,11 +1,68 @@
-<div ng-controller="HeaderCtrl" class="page-header">
-  <div class="container">
-    <div class="row">
-      <h1 class="col-8">{{title}}</h1>
-      <div ng-if="session.signedIn" class="col-4">
-        <p>{{session.username}}</p>
-        <button class="btn btn-clemson-alt" ng-click="signOut()">Sign Out</button>
+<div ng-controller="HeaderCtrl" class="mb-3">
+  <!-- Header --> 
+  <div class="page-header">
+    <div class="container">
+      <div class="row">
+        <h1 class="col-8">{{title}}</h1>
       </div>
+    </div>
+  </div>
+  
+  <!-- Nav bar --> 
+ 
+  <div ng-if="session.signedIn" class="custom-navbar">
+    <div class="container">
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#!home">{{brand}}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <!-- User Navbar Links --> 
+          <ul ng-if="session.role == 'user'" class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="#!home">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#!availableInstruments">Instruments</a>
+              </li>
+          </ul>
+
+          <!-- Manager Navbar Links --> 
+          <ul ng-if="session.role == 'manager'" class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="#!home">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#!allInstruments">Instruments</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#!addInstrument">Add Instrument</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#!pendingContracts">Pending Contracts</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#!rentalInformation">Active Contracts</a>
+              </li>
+          </ul>
+
+          <!-- Admin Navbar Links --> 
+          <ul ng-if="session.role == 'admin'" class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="#!home">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#!manageUsers">Manage Users</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#!addUser">Add User</a>
+              </li>
+          </ul>
+          <button class="btn btn-clemson-alt" ng-click="signOut()">Sign Out</button>
+        </div>
+      </nav>
     </div>
   </div>
 </div>

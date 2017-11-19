@@ -11,8 +11,6 @@ angular.module('instRent', [
   var getSession = function() {
     return $http.get('php/ajax_handlers_cst.php?action=get_session')
     .then(function onSuccess(result){
-      console.log('got session');
-      console.log(result.data.data);
       return result.data.data;
     }, function onError(result){
       console.log('failed to get session')
@@ -27,7 +25,7 @@ angular.module('instRent', [
 angular.module('instRent.main', ['ngRoute'])
 
 .controller('mainCtrl', function mainCtrl($scope, $rootScope, sessionLoader, $location, $http, $httpParamSerializerJQLike){
-  
+
   // WARNING: setting the location here may be problematic later on.
   sessionLoader.getSession().then(function(result){
     $rootScope.session = result;
