@@ -45,8 +45,15 @@ angular.module('instRent.login', ['ngRoute'])
       console.log(result.data);
       sessionLoader.getSession().then(function(result){
         $rootScope.session = result;
-      })
-      $location.url('/home');
+        if($rootScope.session.role == 'admin'){
+          $location.url('adminHome');
+        } else if ($rootScope.session.role == 'manager'){
+          $location.url('managerHome');
+        } else {
+          // TODO: add generic error page to send users to in case role is not any of the three valid roles
+          $location.url('userHome');
+        }
+      });
     }, function onError(result){
       // do things with result on error
       console.log(result.data);

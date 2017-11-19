@@ -1,9 +1,11 @@
-
 angular.module('instRent', [
   'ngRoute',
   'instRent.main',
   'instRent.login',
   'instRent.home',
+  'instRent.userHome',
+  'instRent.managerHome', 
+  'instRent.adminHome',
   'instRent.header'
 ])
 
@@ -25,12 +27,18 @@ angular.module('instRent', [
 angular.module('instRent.main', ['ngRoute'])
 
 .controller('mainCtrl', function mainCtrl($scope, $rootScope, sessionLoader, $location, $http, $httpParamSerializerJQLike){
-
-  // WARNING: setting the location here may be problematic later on.
   sessionLoader.getSession().then(function(result){
     $rootScope.session = result;
-    if(result.signedIn){
-      $location.url('home');
+    // changing location here causes page to go to home on load and reload from anywhere in website
+    if($rootScope.session.signedIn){
+      if($rootScope.session.role == 'admin'){
+        $location.url('adminHome');
+      } else if ($rootScope.session.role == 'manager'){
+        $location.url('managerHome');
+      } else {
+        // TODO: add generic error page to send users to in case role is not any of the three valid roles
+        $location.url('userHome');
+      }
     } else {
       $location.url('login');
     }
