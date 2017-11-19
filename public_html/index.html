@@ -20,20 +20,22 @@
 </head>
 <body ng-controller="mainCtrl">
   <div class="page-header">
-    <div class="container">
-      <div class="row">
-        <h1 class="col-8">Clemson University Instrument Rentals</h1>
-        <div ng-if="session.signedIn" class="col-4">
-          <p>{{session.username}}</p>
-          <button class="btn btn-clemson-alt" ng-click="signOut()">Sign Out</button>
-        </div>
+  <div class="container">
+    <div class="row">
+      <h1 class="col-8">{{title}}</h1>
+      <div ng-if="session.signedIn" class="col-4">
+        <p>{{session.username}}</p>
+        <button class="btn btn-clemson-alt" ng-click="signOut()">Sign Out</button>
       </div>
     </div>
   </div>
+</div>
 
   <div ng-view></div>
 
   <script src="app.js"></script>
+  <script src="views/header/header.js"></script>
   <script src="views/login/login.js"></script>
+  <script src="views/home/home.js"></script>
 </body>
 </html>

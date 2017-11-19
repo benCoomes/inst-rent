@@ -9,7 +9,7 @@ angular.module('instRent.login', ['ngRoute'])
   });
 }])
 
-.controller('LoginCtrl', function LoginCtrl($scope, $route, $location, $http, $httpParamSerializerJQLike){
+.controller('LoginCtrl', function LoginCtrl($scope, $rootScope, sessionLoader, $route, $location, $http, $httpParamSerializerJQLike){
   // set up properties on scope- these can be functions, objects, and primitive types
 
   // these are objects, and they will be bound to the values entered into
@@ -36,7 +36,7 @@ angular.module('instRent.login', ['ngRoute'])
   $scope.submitSignInForm = function(){
     // make an ajax post, and define success and error handlers.
     $http({
-      url:'php/ajax_handlers.php?action=sign_in',
+      url:'php/ajax_handlers_cst.php?action=sign_in',
       method:'POST',
       data: $httpParamSerializerJQLike($scope.signInForm),
       headers: {
@@ -47,6 +47,9 @@ angular.module('instRent.login', ['ngRoute'])
     .then(function onSuccess(result){
       // do things with result on success
       console.log(result.data);
+      sessionLoader.getSession().then(function(result){
+        $rootScope.session = result;
+      })
       $location.url('/home');
     }, function onError(result){
       // do things with result on error
@@ -56,7 +59,7 @@ angular.module('instRent.login', ['ngRoute'])
 
   $scope.submitSignUpForm = function(){
      $http({
-      url:'php/ajax_handlers.php?action=sign_up',
+      url:'php/ajax_handlers_cst.php?action=sign_up',
       method:'POST',
       data: $httpParamSerializerJQLike($scope.signUpForm),
       headers: {
@@ -72,4 +75,7 @@ angular.module('instRent.login', ['ngRoute'])
       console.log(result.data);
     })
   }
+
+  console.log('At end of login Ctrl.');
+  console.log($scope);
 });

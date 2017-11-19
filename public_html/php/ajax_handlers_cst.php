@@ -67,21 +67,21 @@ class Response{
 class AjaxHandler{
   private $conn = NULL;
 
-  // create connection and errors array
+  /**********************************************
+  testing variables to replace DB query results
+  **********************************************/
+  private $users = NULL;
+
+  // create pseudo DB
   function __construct($configLoc){
-    $configFile = fopen($configLoc, "r") or die ('error : Could not find db configuration file.');
-    $config = json_decode(fread($configFile, filesize($configLoc)), true);
-    fclose($configFile);
+    $this->users = [
+      ['username' => 'bcoomes', 'password' => 'bcpass', 'role' => 'user', 'cuid' => 1000100],
+      ['username' => 'cjwest', 'password' => 'cwpass', 'role' => 'user', 'cuid' => 2000200],
+      ['username' => 'admin', 'password' => 'ampass', 'role' => 'admin', 'cuid' => 3000300],
+      ['username' => 'speedy', 'password' => 'sppass', 'role' => 'manager', 'cuid' => 4000400],
+      ['username' => 'rando', 'password' => 'rdpass', 'role' => 'manager', 'cuid' => 5000500]
+    ];
 
-    $conn = new mysqli($config["host"], $config["username"], $config["password"]);
-
-    if($conn->connect_error){
-      $response = new Response();
-      $response->setMsg('Failed to connect to database');
-      $response->setStatus('Error');
-      $response->setData([]);
-      die($response->toJson());
-    }
   }
 
   /*****************************************
@@ -93,22 +93,29 @@ class AjaxHandler{
     return False otherwise
   */
   private function isUser($username, $password){
-    // fake implementation for testing
-    if($username == 'bcoomes' && $password == 'password'){
-      return True;
-    } else {
-      return False;
+    foreach($this->users as $user){ 
+      if($user['username'] == $username && $user['password'] == $password){
+        return True;
+      } 
     }
+    return False;
   }
 
   /*
     Get user role, cuid for row with username = $username
+    Return false if user with username is not found
   */
   private function startUserSession($username){
     // fake implementation for testing
-      $_SESSION['username'] = $username;
-      $_SESSION['role'] = 'user';
-      $_SESSION['cuid'] = 'C1234567';
+    foreach($this->users as $user){
+      if($user['username'] == $username){
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['cuid'] = $user['cuid'];
+        return True;
+      }
+    }
+    return False;
   }
 
 
