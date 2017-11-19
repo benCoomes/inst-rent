@@ -9,13 +9,9 @@ angular.module('instRent.login', ['ngRoute'])
   });
 }])
 
-.controller('LoginCtrl', function LoginCtrl($scope, $rootScope, sessionLoader, $route, $location, $http, $httpParamSerializerJQLike){
-  // set up properties on scope- these can be functions, objects, and primitive types
+.controller('LoginCtrl', function LoginCtrl($scope, $rootScope,sessionLoader, $route, $location, $http, $httpParamSerializerJQLike){
+  $scope.informationalTitle = "This is coming from the loginCtrl in login.js!";
 
-  // these are objects, and they will be bound to the values entered into
-  // the form by the user. This means that $scope.signInForm.username will
-  // always be equal to what is seen in the html form. The value can be 
-  // changed from the form or from js code. 
   $scope.signInForm = {
     'username' : '',
     'password' : ''
@@ -69,13 +65,11 @@ angular.module('instRent.login', ['ngRoute'])
     })
     .then(function onSuccess(result){
       // do things with result on success
+      // be sure to set the root session!!
       console.log(result.data);
     }, function onError(result){
       // do things with result on error
       console.log(result.data);
     })
   }
-
-  console.log('At end of login Ctrl.');
-  console.log($scope);
 });

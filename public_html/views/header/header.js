@@ -1,11 +1,8 @@
 angular.module('instRent.header', [])
 
-.controller('HeaderCtrl', function HeaderCtrl($scope, sessionLoader, $location, $http, $httpParamSerializerJQLike){
-  /*
-  sessionLoader.getSession().then(function(result){
-    $scope.session = result;
-  })
-  */
+.controller('HeaderCtrl', function HeaderCtrl($scope, $rootScope, sessionLoader, $location, $http, $httpParamSerializerJQLike){
+  $scope.title = 'Clemson Uni Inst Rent';
+  
   $scope.signOut = function() {
     $http({
       url:'php/ajax_handlers_cst.php?action=sign_out',
@@ -17,7 +14,7 @@ angular.module('instRent.header', [])
       timeout: 2000
     })
     .then(function onSuccess(result){
-      $scope.session = {};
+      $rootScope.session = {};
       $location.url('login');
     }, function onError(result){
       // do things with result on error
@@ -25,7 +22,4 @@ angular.module('instRent.header', [])
     })
   };
 
-  console.log('At end of header Ctrl');
-  console.log($scope);
-  
 })

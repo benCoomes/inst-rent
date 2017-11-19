@@ -19,17 +19,7 @@
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body ng-controller="mainCtrl">
-  <div class="page-header">
-  <div class="container">
-    <div class="row">
-      <h1 class="col-8">{{title}}</h1>
-      <div ng-if="session.signedIn" class="col-4">
-        <p>{{session.username}}</p>
-        <button class="btn btn-clemson-alt" ng-click="signOut()">Sign Out</button>
-      </div>
-    </div>
-  </div>
-</div>
+  <ng-include src="'views/header/header.html'"></ng-include>
 
   <div ng-view></div>
 
