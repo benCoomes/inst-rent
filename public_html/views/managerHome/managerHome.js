@@ -7,6 +7,6 @@ angular.module('instRent.managerHome', ['ngRoute'])
   });
 }])
 
-.controller('ManagerHomeCtrl', function ManagerHomeCtrl($scope, $rootScope, sessionLoader){
+.controller('ManagerHomeCtrl', function ManagerHomeCtrl($scope, $rootScope){
   $scope.message = "This is the manager home page";
 })

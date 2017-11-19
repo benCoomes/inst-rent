@@ -2,7 +2,7 @@ angular.module('instRent', [
   'ngRoute',
   'instRent.main',
   'instRent.login',
-  'instRent.home',
+  'instRent.instruments',
   'instRent.userHome',
   'instRent.managerHome', 
   'instRent.adminHome',

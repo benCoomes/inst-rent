@@ -7,6 +7,6 @@ angular.module('instRent.adminHome', ['ngRoute'])
   });
 }])
 
-.controller('AdminHomeCtrl', function AdminHomeCtrl($scope, $rootScope, sessionLoader){
+.controller('AdminHomeCtrl', function AdminHomeCtrl($scope, $rootScope){
   $scope.message = "This is the admin home page";
 })

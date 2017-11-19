@@ -7,6 +7,6 @@ angular.module('instRent.userHome', ['ngRoute'])
   });
 }])
 
-.controller('UserHomeCtrl', function UserHomeCtrl($scope, $rootScope, sessionLoader){
+.controller('UserHomeCtrl', function UserHomeCtrl($scope, $rootScope){
   $scope.message = "This is the user home page";
 })
