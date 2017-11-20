@@ -1,4 +1,76 @@
 <div class="container">
-  <h1>INSTRUMENTS</h1>
-  <h3>{{message}}</h2>
+  <div class="row">
+    <h2 class="col-md-12 mb-4">Instrument Search</h2>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card card-clemson">
+        <div class="card-body">
+          <form class="form" id="inst-table-form">
+            <div class="form-group row">
+              <label for="itf-search" class="col-md-2 col-form-label">Search:</label>
+              <div class="col-md-10">
+                <input ng-model="filterForm.search" ng-model-options="{debounce:200}" ng-change="getInstruments()" type="text" id="itf-search" class="form-control">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="itf-type" class="col-md-2 col-form-label">Type:</label>
+              <div class="col-md-4">
+                <select ng-model="filterForm.type" ng-change="getInstruments()" class="form-control" id="itf-type">
+                  <option value="All">All</option>
+                  <option ng-repeat="type in instrumentTypes">{{type}}</option>
+                </select>
+              </div>
+              <label for="itf-condition" class="col-md-2 col-form-label">Condition:</label>
+              <div class="col-md-4">
+                <select ng-model="filterForm.cond" ng-change="getInstruments()" class="form-control" id="itf-condition">
+                  <option value="All">All</option>
+                  <option ng-repeat="cond in instrumentConditions" value="{{cond}}">{{cond}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group row" ng-if='session.role == "manager"'>
+              <label for="itf-availability" class="col-md-2 col-form-label">Availability:</label>
+              <div class="col-md-10">
+                <div class="form-check form-check-inline">
+                  <label class="form-check-label">
+                    <input ng-model="filterForm.available" ng-change="getInstruments()" class="form-check-input" type="checkbox">&nbsp;Available&nbsp;
+                  </label>
+                  <label class="form-check-label">
+                    <input ng-model="filterForm.checkedOut" ng-change="getInstruments()" class="form-check-input" type="checkbox">&nbsp;Checked Out&nbsp;
+                  </label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <table class="table mt-4">
+      <thead>
+        <tr>
+          <th>Serial No</th>
+          <th>Type</th>
+          <th>Condition</th>
+          <th ng-if="session.role == 'manager'">Available</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat='inst in instruments'>
+          <td>{{inst.serial_no}}</td>
+          <td>{{inst.type}}</td>
+          <td>{{inst.cond}}</td>
+          <td ng-if="session.role == 'manager'">{{inst.available}}</td>
+          <td>
+              <button ng-if='inst.available && session.role=="user"' ng-click="checkOutInstrument(inst.serial_no)" class="btn btn-clemson-orange">Check Out</button>
+              <button ng-if='!inst.available && session.role=="manager"' ng-click="checkInInstrument(inst.serial_no)" class="btn btn-clemson-purple">Check In</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

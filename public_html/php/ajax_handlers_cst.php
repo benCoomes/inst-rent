@@ -148,12 +148,97 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  /*
+    Expects: 
+      GET with no variables
+    Permissions: 
+      No restrictions
+    Success: 
+      Condition: query completed, even if empty
+      Status Code: 200
+      Data: list of types present on instruments in the instruments table
+    Failure: 
+      No defined failure states
+  */
+  private function getInstrumentTypes(){
+    $types = ["Trumpet", "Flute", "Tuba", "Clarinet", "French Horn", "Sousaphone", "Didgeridoo"];
+    $response = new Response(
+      'Success',
+      'Got instrument types',
+      $types
+    );
+    print $response->toJson();
+  }
+
+  /*
+    Expects: 
+      GET with no variables
+    Permissions: 
+      No restrictions
+    Success: 
+      Condition: query completed, even if empty
+      Status Code: 200
+      Data: list of conditions present on instruments in the instruments table
+    Failure: 
+      No defined failure statues
+  */
+  private function getInstrumentConditions(){
+    $conditions = ["Needs Repair", "Poor", "Fair", "Good", "Excellent"];
+    $response = new Response(
+      'Success',
+      'Got instrument conditions',
+      $conditions
+    );
+    print $response->toJson();
+  }
+
+  /*
+    Expects: 
+      GET with optional variables: 'type', 'cond', 'search', 'available', and 'checkedOut'
+    Permissions:
+      User: users may only see available instruments.
+      Manager: managers may see available and checked out instruments.
+    Success:
+      Condition: query completed, even if empty
+      Status Code: 200
+      Data: Instruments returned by query. Select by 'type', 'cond', and 'search' if specified.
+        If 'available' is in QS, do not get available instruments (getting available instruments is default)
+        If 'checkedOut' is in QS, get checked out instruments (do not get them by default)
+    Failure: 
+      No defined failure states
+  */
   private function getInstruments(){
-    // get instrumets from database, return as json
+    // return fake instrument list
+    $instruments = [
+      ['serial_no' => '1234TXX', 'type' => 'Trumpet', 'cond' => 'Excellent', 'available' => True, 'rented_by' => Null],
+      ['serial_no' => '9090877', 'type' => 'Flute', 'cond' => 'Needs Repair', 'available' => True, 'rented_by' => Null],
+      ['serial_no' => 'TRU6473', 'type' => 'Trumpet', 'cond' => 'Fair', 'available' => False, 'rented_by' => 'cjwest'],
+      ['serial_no' => '9874018', 'type' => 'Tuba', 'cond' => 'Poor', 'available' => True, 'rented_by' => Null],
+      ['serial_no' => '10MRD92', 'type' => 'Clarinet', 'cond' => 'Good', 'available' => False, 'rented_by' => 'bcoomes'],
+      ['serial_no' => '5390293', 'type' => 'French Horn', 'cond' => 'Fair', 'available' => True, 'rented_by' => Null],
+      ['serial_no' => '9920994', 'type' => 'Sousaphone', 'cond' => 'Good', 'available' => False, 'rented_by' => 'bcoomes'],
+      ['serial_no' => 'DDRD000', 'type' => 'Didgeridoo', 'cond' => 'Excellent', 'available' => True, 'rented_by' => Null]
+    ];
+
+
     $response = new Response(
       'Success',
       'Get Instruments function called'
     );
+
+    if($_SESSION['role']== 'user'){
+      $availableInstruments = [];
+      foreach($instruments as $inst){
+        if($inst['available']){
+          $availableInstruments[] = $inst;
+        }
+      }
+      $response->setData($availableInstruments);
+
+    } else if($_SESSION['role'] == 'manager'){
+      $response->setData($instruments);
+    }
+
     print $response->toJson();
   }
 
@@ -268,6 +353,14 @@ class AjaxHandler{
 
       case "get_instruments":
         $this->getInstruments();
+        break;
+
+      case "get_instrument_types":
+        $this->getInstrumentTypes();
+        break;
+
+      case "get_instrument_conditions":
+        $this->getInstrumentConditions();
         break;
 
       case "sign_in":

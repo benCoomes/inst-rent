@@ -18,10 +18,16 @@
 	padding-bottom: 1rem;
 }
 
-.btn-clemson {
+.btn-clemson-orange {
 	color: var(--fort-hill);
 	background-color: var(--clemson-orange);
 	border-color: var(--clemson-orange);
+}
+
+.btn-clemson-purple{
+	color: var(--fort-hill);
+	background-color: var(--regalia);
+	border-color: var(--regalia);
 }
 
 .btn-clemson-alt {

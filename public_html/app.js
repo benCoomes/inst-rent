@@ -34,16 +34,7 @@ angular.module('instRent.main', ['ngRoute'])
   sessionLoader.getSession().then(function(result){
     $rootScope.session = result;
     // changing location here causes page to go to home on load and reload from anywhere in website
-    if($rootScope.session.signedIn){
-      if($rootScope.session.role == 'admin'){
-        $location.url('adminHome');
-      } else if ($rootScope.session.role == 'manager'){
-        $location.url('managerHome');
-      } else {
-        // TODO: add generic error page to send users to in case role is not any of the three valid roles
-        $location.url('userHome');
-      }
-    } else {
+    if(! $rootScope.session.signedIn){
       $location.url('login');
     }
   });
