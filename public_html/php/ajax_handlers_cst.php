@@ -198,6 +198,7 @@ class AjaxHandler{
     Permissions:
       User: users may only see available instruments.
       Manager: managers may see available and checked out instruments.
+      Admins: Admins may see available and checked out instruments.
     Success:
       Condition: query completed, even if empty
       Status Code: 200
@@ -264,7 +265,8 @@ class AjaxHandler{
       http_response_code(401);
       $response = new Response(
         'Error',
-        'User does not have permission to add an instrument.'
+        'User does not have permission to add an instrument.',
+        ["username" => $_SESSION["username"]]
       );
       print $response->toJson();
       return;
@@ -283,6 +285,86 @@ class AjaxHandler{
 
     print $response->toJson();
   }
+
+  /*
+    Expects: 
+      GET with optional variables: 'search', 'showUsers', 'showManagers' and 'showAdmins'
+    Permissions:
+      Admins: only admins may view this information.
+    Success:
+      Condition: query completed, even if empty
+      Status Code: 200
+      Data: Users returned by query. Select by 'search', role if specified.
+        If 'show*' is not in QS, get users with role = *
+        If 'show*' is in QS, check its value (false or true). Do not get users with role = * if false.
+    Failure (permissions):
+      status code: 401
+      data: session username 
+  */
+  private function getUsers(){
+    if($_SESSION['role'] != 'admin'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to view users',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $users = [
+      [
+        "cuid" => "1000100",
+        "username" => "bcoomes",
+        "firstName" => "Ben",
+        "lastName" => "Coomes",
+        "role" => "user",
+        "email" => "bcoomes@email.com"
+      ],
+      [
+        "cuid" => "2000200",
+        "username" => "cjwest",
+        "firstName" => "Chris",
+        "lastName" => "West",
+        "role" => "user",
+        "email" => "cjwest@email.com"
+      ],
+      [
+        "cuid" => "3000300",
+        "username" => "admin",
+        "firstName" => "Database",
+        "lastName" => "Administrator",
+        "role" => "admin",
+        "email" => "admin@email.com"
+      ],
+      [
+        "cuid" => "4000400",
+        "username" => "speedy",
+        "firstName" => "John",
+        "lastName" => "Speed",
+        "role" => "manager",
+        "email" => "speed@clemson.edu"
+      ],
+      [
+        "cuid" => "5000500",
+        "username" => "rando",
+        "firstName" => "Random",
+        "lastName" => "Man",
+        "role" => "manager",
+        "email" => "rando@email.com"
+      ]
+    ];
+
+    $response = new Response(
+      'Success',
+      'Retrieved users data',
+      $users
+    );
+    print $response->toJson();
+    return;
+  }
+
 
   /*
     Expects: 
@@ -305,7 +387,8 @@ class AjaxHandler{
       http_response_code(401);
       $response = new Response(
         'Error',
-        'User does not have permission to add a user.'
+        'User does not have permission to add a user.',
+        ["username" => $_SESSION["username"]]
       );
       print $response->toJson();
       return;
@@ -463,6 +546,10 @@ class AjaxHandler{
 
       case "add_instrument":
         $this->addInstrument();
+        break;
+
+      case "get_users":
+        $this->getUsers();
         break;
 
       case "add_user":

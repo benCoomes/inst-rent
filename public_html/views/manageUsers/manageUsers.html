@@ -1,4 +1,69 @@
 <div class="container">
-  <h1>MANAGE USERS</h1>
-  <h3>{{message}}</h2>
+  <div class="row">
+    <h2>Manage Users</h2>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card card-clemson">
+        <div class="card-body">
+          <form class="form" id="user-table-form">
+            <div class="form-group row">
+              <label for="utf-search" class="col-md-2 col-form-label">Search:</label>
+              <div class="col-md-10">
+                <input ng-model="filterForm.search" ng-model-options="{debounce: 200}" ng-change="getUsers()" type="text" id="itf-search" class="form-control">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="utf-role" class="col-md-2 col-form-label">Role:</label>
+              <div class="col-md-10">
+                <div class="form-check form-check-inline">
+                  <label class="form-check-label">
+                    <input ng-model="filterForm.showUsers" ng-change="getUsers()" class="form-check-input" type="checkbox">&nbsp;user&nbsp;
+                  </label>
+                  <label class="form-check-label">
+                    <input ng-model="filterForm.showManagers" ng-change="getUsers()" class="form-check-input" type="checkbox">&nbsp;manager&nbsp;
+                  </label>
+                  <label class="form-check-label">
+                    <input ng-model="filterForm.showAdmins" ng-change="getUsers()" class="form-check-input" type="checkbox">&nbsp;admin&nbsp;
+                  </label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <table class="table mt-4">
+      <thead>
+        <tr>
+          <th>CUID</th>
+          <th>Username</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Role</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat='user in users'>
+          <td>{{user.cuid}}</td>
+          <td>{{user.username}}</td>
+          <td>{{user.firstName}}</td>
+          <td>{{user.lastName}}</td>
+          <td>{{user.role}}</td>
+          <td>{{user.email}}</td>
+          <td>
+            <button ng-click="editUser(user.cuid)" class="btn btn-clemson-purple">Edit</button>
+            <button ng-click="deleteUser(user.cuid)" class="btn btn-danger">Delete</button>
+          </td>
+        </tr>
+      </tbody> 
+    </table>
+  </div>
+    
 </div>

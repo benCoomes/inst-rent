@@ -31,6 +31,7 @@ angular.module('instRent.instruments', ['ngRoute'])
   }
 
   $scope.getInstruments = function() {
+    //TODO: encode http chars in search before appending
     let qsparams = 'action=get_instruments';
     if($scope.filterForm.type && $scope.filterForm.type != "All"){
       qsparams = qsparams + '&type=' + $scope.filterForm.type;
@@ -53,6 +54,7 @@ angular.module('instRent.instruments', ['ngRoute'])
     .then(function onSuccess(result){
       $scope.instruments = result.data.data;
     }, function onError(result){
+      $scope.instruments = [];
       console.log('failed to get instruments')
       console.log(result);
     });
@@ -88,6 +90,10 @@ angular.module('instRent.instruments', ['ngRoute'])
   $scope.checkOutInstrument = function(serial_no){
     console.log("checking out: " + serial_no);
     //TODO: reroute to check out form, supplying serial_no to autofill form
+  }
+
+  $scope.deleteInstrument = function(serial_no){
+    //TODO: delete instrument. Managers only.
   }
 
   $scope.getInstruments();
