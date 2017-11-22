@@ -14,10 +14,14 @@ angular.module('instRent.addInstrument', ['ngRoute'])
       'type' : '',
       'condition' : ''     
     }
+    $scope.validate();
   }
 
   $scope.validate = function(){
-    if($scope.addInstForm.serialNo && $scope.addInstForm.type && $scope.addInstForm.condition){
+    if($scope.addInstForm && 
+        $scope.addInstForm.serialNo && 
+        $scope.addInstForm.type && 
+        $scope.addInstForm.condition){
       $scope.valid = true;
     } else {
       $scope.valid = false;
@@ -49,5 +53,4 @@ angular.module('instRent.addInstrument', ['ngRoute'])
 
  
   $scope.resetForm(); // also initializes the form
-  $scope.valid = $scope.validate();
 })

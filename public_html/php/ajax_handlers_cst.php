@@ -284,6 +284,62 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  /*
+    Expects: 
+      Post with variables shown in function body.
+    Permissions:
+      Admin: Only admins may perform this action.
+    Success:
+      Condition: Insert row into users table using given data - no errors
+      Status Code: 200
+      Data: username, role, cuid of new user
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error/ duplicate keys / bad passwords / invalid role):
+      Status Code: 400
+      Data: all user data from post
+  */
+  private function addUser(){
+    if($_SESSION['role'] != 'admin'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to add a user.'
+      );
+      print $response->toJson();
+      return;
+    }
+
+    // 'add' user - put sql code below in production
+    $cuid = $_POST['cuid'];
+    $cuEmail = $_POST['cuEmail'];
+    $username = $_POST['username'];
+    $firstName = $_POST['firstName'];
+    $lastName = $_POST['lastName'];
+    $password = $_POST['password'];
+    $passwordConfirm = $_POST['passwordConfirm'];
+    $role = $_POST['role'];
+
+    $newUser = [
+      "cuid" => $cuid,
+      "cuEmail" => $cuEmail,
+      "username" => $username,
+      "firstName" => $firstName,
+      "lastName" => $lastName,
+      "password" => $password,
+      "passwordConfirm" => $passwordConfirm,
+      "role" => $role
+    ];
+
+    $response = new Response(
+      'Success',
+      'Added user.',
+      $newUser
+    );
+    print $response->toJson();
+    return;
+  }
 
   /*
     Expects: 
@@ -407,6 +463,10 @@ class AjaxHandler{
 
       case "add_instrument":
         $this->addInstrument();
+        break;
+
+      case "add_user":
+        $this->addUser();
         break;
 
       case "sign_in":

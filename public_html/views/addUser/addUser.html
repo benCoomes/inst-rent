@@ -1,4 +1,67 @@
 <div class="container">
-  <h1>ADD USER</h1>
-  <h3>{{message}}</h2>
+  <div class="row">
+    <div class="col-12">
+            <div class="card card-clemson mb-3">
+        <h2 class="card-header">Add User</h2>
+        <div class="card-body">
+          <form class="form" id="au-form" ng-submit="submitForm()" ng-model-options="{debounce:200}">
+            <div class="form-group row">
+              <label for="au-cuid" class="col-md-3 col-form-label">CUID</label>
+              <div class="col-md-9">
+                <input type="number" id="au-cuid" class="form-control" ng-model="addUserForm.cuid" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="au-email" class="col-md-3 col-form-label">Clemson Email</label>
+              <div class="col-md-9">
+                <input type="email" id="au-email" class="form-control" ng-model="addUserForm.cuEmail" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="au-username" class="col-md-3 col-form-label">Username</label>
+              <div class="col-md-9">
+                <input type="text" id="au-username" class="form-control" ng-model="addUserForm.username" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="au-fname" class="col-md-3 col-form-label">First Name</label>
+              <div class="col-md-9">
+                <input type="text" id="au-fname" class="form-control" ng-model="addUserForm.firstName" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="au-lname" class="col-md-3 col-form-label">Last Name</label>
+              <div class="col-md-9">
+                <input type="text" id="au-lname" class="form-control" ng-model="addUserForm.lastName" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="au-password" class="col-md-3 col-form-label">Password</label>
+              <div class="col-md-9">
+                <input type="password" id="au-password" class="form-control" ng-model="addUserForm.password" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="au-confirm-password" class="col-md-3 col-form-label">Confirm Password</label>
+              <div class="col-md-9">
+                <input type="password" id="au-confirm-password" class="form-control" ng-model="addUserForm.passwordConfirm" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="au-role" class="col-md-3 col-form-label">User Role</label>
+              <div class="col-md-9">
+                <select id="au-role" class="form-control" ng-model="addUserForm.role" ng-change="validate()">
+                  <option value="">-- Select a role --</option>
+                  <option value="user">User</option>
+                  <option value="manager">Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            </div>
+            <input ng-disabled="!valid" type="submit" value="Add User" class="btn btn-clemson-orange">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
