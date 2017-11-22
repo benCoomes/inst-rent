@@ -242,6 +242,48 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  /*
+    Expects: 
+      Post with variables 'serialNo', 'type' and 'condition'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Insert row into instruments table using given data - no errors
+      Status Code: 200
+      Data: serialNo, type, condition
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username
+    Failure (integrity error/ duplicate keys):
+      Status Code: 400
+      Data: serialNo, type, condition
+  */
+  private function addInstrument(){
+    // check permissions
+    if($_SESSION['role'] != 'manager'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to add an instrument.'
+      );
+      print $response->toJson();
+      return;
+    }
+
+    // 'add' instrument - put sql code below in production
+    $serial_no = $_POST["serialNo"];
+    $type = $_POST["type"];
+    $condition = $_POST["condition"];
+
+    $response = new Response(
+      'Success',
+      'Successfully added instrument.',
+      ['serial_no' => $serial_no, 'type' => $type, 'condition' => $condition]
+    );
+
+    print $response->toJson();
+  }
+
 
   /*
     Expects: 
@@ -361,6 +403,10 @@ class AjaxHandler{
 
       case "get_instrument_conditions":
         $this->getInstrumentConditions();
+        break;
+
+      case "add_instrument":
+        $this->addInstrument();
         break;
 
       case "sign_in":
