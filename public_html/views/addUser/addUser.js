@@ -43,7 +43,7 @@ angular.module('instRent.addUser', ['ngRoute'])
   }
 
   $scope.submitForm = function(){
-    if($rootScope.session.role = 'admin'){
+    if($rootScope.session.role == 'admin'){
       $http({
         url: 'php/ajax_handlers_cst.php?action=add_user',
         method: 'POST',

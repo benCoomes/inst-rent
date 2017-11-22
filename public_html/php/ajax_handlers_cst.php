@@ -424,6 +424,43 @@ class AjaxHandler{
     return;
   }
 
+  private function deleteUser(){
+    $cuid = $_POST["cuid"];
+    
+    if($_SESSION['role'] != 'admin'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to delete a user.',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    if($_SESSION['cuid'] == $cuid){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'User cannot delete themselves.',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+
+    // do sql here
+
+    $response = new Response(
+      'Success',
+      'Delted user.',
+      ["cuid" => $cuid]
+    );
+    print $response->toJson();
+    return;
+  }
+
   /*
     Expects: 
       Post with variables 'username' and 'password'
@@ -554,6 +591,10 @@ class AjaxHandler{
 
       case "add_user":
         $this->addUser();
+        break;
+
+      case "delete_user":
+        $this->deleteUser();
         break;
 
       case "sign_in":

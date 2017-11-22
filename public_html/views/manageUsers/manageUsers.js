@@ -7,7 +7,7 @@ angular.module('instRent.manageUsers', ['ngRoute'])
   });
 }])
 
-.controller('ManageUsersCtrl', function ManageUsersCtrl($scope, $rootScope, $routeParams, $http){
+.controller('ManageUsersCtrl', function ManageUsersCtrl($scope, $rootScope, $http, $httpParamSerializerJQLike, $location){
   $scope.getUsers = function(){
     let qsparams = 'action=get_users';
     //TODO: encode http chars in search before appending
@@ -36,12 +36,34 @@ angular.module('instRent.manageUsers', ['ngRoute'])
 
   $scope.editUser = function(cuid){
     //todo
-    console.log('editing user: ' + cuid);
+    $location.url('editUser?cuid=' + cuid)
   }
 
   $scope.deleteUser = function(cuid){
-    //todo
-    console.log('deleting user: ' + cuid);
+    if($rootScope.session.role == 'admin'  && $rootScope.session.cuid != cuid){
+      $http({
+        url: 'php/ajax_handlers_cst.php?action=delete_user',
+        method: 'POST',
+        data: $httpParamSerializerJQLike({'cuid' : cuid}),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+      .then(function onSuccess(result){
+        $scope.resetForm();
+        console.log(result.data);
+        alert("Successfully deleted user.")
+      }, function onError(result){
+        alert("Failed to delete user.")
+        console.log(result);
+      })
+    } else {
+      if($rootScope.session.role != 'admin'){
+        alert('You do not have permission to perform this action.');
+      } else {
+        alert('You cannot delete youself.')
+      }
+    }
   }
 
   $scope.resetForm = function(){
@@ -51,12 +73,8 @@ angular.module('instRent.manageUsers', ['ngRoute'])
       'showManagers': true,
       'showAdmins' : true
     };
-    $scope.getUsers();
-  }
 
-  $scope.params = $routeParams;
-  if($scope.params["status"]){
-    $scope.message = $scope.message + ": Filter by status = " + $scope.params["status"];
+    $scope.getUsers();
   }
 
   $scope.resetForm(); // sets default form values and then gets data
