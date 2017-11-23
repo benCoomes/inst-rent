@@ -10,6 +10,7 @@ angular.module('instRent', [
   'instRent.contracts',
   'instRent.manageUsers',
   'instRent.addUser',
+  'instRent.editUser',
   'instRent.header'
 ])
 

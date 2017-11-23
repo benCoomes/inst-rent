@@ -1,0 +1,69 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+            <div class="card card-clemson mb-3">
+        <h2 class="card-header">Edit User</h2>
+        <div class="card-body">
+          <form class="form" id="eu-form" ng-submit="submitForm()" ng-model-options="{debounce:200}">
+            <div class="form-group row">
+              <label for="eu-cuid" class="col-md-3 col-form-label">CUID</label>
+              <div class="col-md-9">
+                <input ng-disabled="disableCuid" type="number" id="eu-cuid" class="form-control" ng-model="editUserForm.cuid" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="eu-email" class="col-md-3 col-form-label">Clemson Email</label>
+              <div class="col-md-9">
+                <input type="email" id="eu-email" class="form-control" ng-model="editUserForm.cuEmail" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="eu-username" class="col-md-3 col-form-label">Username</label>
+              <div class="col-md-9">
+                <input type="text" id="eu-username" class="form-control" ng-model="editUserForm.username" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="eu-fname" class="col-md-3 col-form-label">First Name</label>
+              <div class="col-md-9">
+                <input type="text" id="eu-fname" class="form-control" ng-model="editUserForm.firstName" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="eu-lname" class="col-md-3 col-form-label">Last Name</label>
+              <div class="col-md-9">
+                <input type="text" id="eu-lname" class="form-control" ng-model="editUserForm.lastName" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="eu-password" class="col-md-3 col-form-label">New Password</label>
+              <div class="col-md-9">
+                <input type="password" id="eu-password" class="form-control" ng-model="editUserForm.password" ng-change="validate()">
+                <small id="pwdHelp" class="form-text text-muted">Leave blank to keep current password.</small>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="eu-confirm-password" class="col-md-3 col-form-label">Confirm Password</label>
+              <div class="col-md-9">
+                <input type="password" id="eu-confirm-password" class="form-control" ng-model="editUserForm.passwordConfirm" ng-change="validate()">
+                <small id="pwdConfHelp" class="form-text text-muted">Leave blank to keep current password.</small>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="eu-role" class="col-md-3 col-form-label">User Role</label>
+              <div class="col-md-9">
+                <select id="eu-role" class="form-control" ng-model="editUserForm.role" ng-change="validate()">
+                  <option value="">-- Select a role --</option>
+                  <option value="user">User</option>
+                  <option value="manager">Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            </div>
+            <input ng-disabled="!valid" type="submit" value="Update" class="btn btn-clemson-orange">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

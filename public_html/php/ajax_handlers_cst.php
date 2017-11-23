@@ -288,15 +288,16 @@ class AjaxHandler{
 
   /*
     Expects: 
-      GET with optional variables: 'search', 'showUsers', 'showManagers' and 'showAdmins'
+      GET with optional variables: 'search', 'showUsers', 'showManagers', 'showAdmins', and 'cuid'.
     Permissions:
       Admins: only admins may view this information.
     Success:
       Condition: query completed, even if empty
       Status Code: 200
-      Data: Users returned by query. Select by 'search', role if specified.
+      Data: Users returned by query, without password data. Select by 'search', role if specified.
         If 'show*' is not in QS, get users with role = *
         If 'show*' is in QS, check its value (false or true). Do not get users with role = * if false.
+        If 'cuid' is in QS, select by exact cuid.
     Failure (permissions):
       status code: 401
       data: session username 
@@ -356,15 +357,90 @@ class AjaxHandler{
       ]
     ];
 
+    $data = [];
+
+    if(isset($_GET['cuid'])){
+      if(!empty($_GET['cuid'])){
+        foreach($users as $user){
+          if($user['cuid'] == $_GET['cuid']){
+            $data[] = $user;
+            break;
+          }
+        }
+      }
+    } else {
+      $data = $users;
+    }
+
     $response = new Response(
       'Success',
-      'Retrieved users data',
-      $users
+      'Retrieved users data: '.$debugMsg,
+      $data
     );
     print $response->toJson();
     return;
   }
 
+  /*
+    Expects: 
+      Post with variables shown in function body, pasword and passwordConfirm optional.
+    Permissions:
+      Admin: Only admins may perform this action.
+    Success:
+      Condition: Update row in users table using given data - no errors
+      Status Code: 200
+      Data: username, role, cuid, firstName, lastName, email, of updated user
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error/ duplicate keys / bad passwords / invalid role):
+      Status Code: 400
+      Data: all user data from post
+  */
+  private function editUser(){
+    if($_SESSION['role'] != 'admin'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to update a user.',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $cuid = $_POST['cuid'];
+    $cuEmail = $_POST['cuEmail'];
+    $username = $_POST['username'];
+    $firstName = $_POST['firstName'];
+    $lastName = $_POST['lastName'];
+    $role = $_POST['role'];
+
+    // sql goes here
+
+    $updatedUser = [
+      "cuid" => $cuid,
+      "cuEmail" => $cuEmail,
+      "username" => $username,
+      "firstName" => $firstName,
+      "lastName" => $lastName,
+      "role" => $role
+    ];
+
+    if(isset($_POST['password']) && isset($_POST['password'])){
+      if(!empty($_POST['password']) && $_POST['passwordConfirm'] == $_POST['password']){
+        $updatedUser['password'] = $_POST['password'];
+      }
+    }
+
+    $response = new Response(
+      'Success',
+      'Updated user.',
+      $updatedUser
+    );
+    print $response->toJson();
+    return;
+  }
 
   /*
     Expects: 
@@ -426,7 +502,7 @@ class AjaxHandler{
 
   private function deleteUser(){
     $cuid = $_POST["cuid"];
-    
+
     if($_SESSION['role'] != 'admin'){
       http_response_code(401);
       $response = new Response(
@@ -587,6 +663,10 @@ class AjaxHandler{
 
       case "get_users":
         $this->getUsers();
+        break;
+
+      case "edit_user":
+        $this->editUser();
         break;
 
       case "add_user":
