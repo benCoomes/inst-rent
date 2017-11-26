@@ -374,7 +374,7 @@ class AjaxHandler{
 
     $response = new Response(
       'Success',
-      'Retrieved users data: '.$debugMsg,
+      'Retrieved users data',
       $data
     );
     print $response->toJson();
@@ -500,6 +500,24 @@ class AjaxHandler{
     return;
   }
 
+
+
+  /*
+    Expects: 
+      Post with variable 'cuid'
+    Permissions:
+      Admin: Only admins may perform this action.
+    Success:
+      Condition: Delete row from users table using given cuid - no errors
+      Status Code: 200
+      Data: username, cuid of deleted user
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error / referential integrity):
+      Status Code: 400
+      Data: cuid
+  */
   private function deleteUser(){
     $cuid = $_POST["cuid"];
 
@@ -536,6 +554,202 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
+
+
+  private function getUserContracts(){
+    $response = new Response(
+      'Success',
+      'Called get user contracts (not implemented)',
+      []
+    );
+    print $response->toJson();
+    return;
+  }
+
+  /*
+    Expects: 
+      GET with optional variables 'cuid', 'search', 'showActive', and 'showPending'
+    Permissions:
+      Manager: Managers may perform this action.
+      User: User may perform this action only when cuid is specified, and only results with matching cuid are returned
+    Success:
+      Condition: Return rows from contracts table using given variables - no errors
+      Status Code: 200
+      Data: for each contract: 
+        start, end, cuid, username, serial_no, type, status
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+  */
+  private function getContracts(){
+    if($_SESSION['role'] == 'user'){
+      $this->getUserContracts();
+    } else if($_SESSION['role'] != 'manager'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to view contracts',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $contracts = [
+      [
+        "start" => "10/10/10",
+        "end" => "10/10/11",
+        "cuid" => "1000100",
+        "username" => "bcoomes",
+        "serial_no" => "LP123213",
+        "type" => "Guitar",
+        "status" => "active"
+      ],
+      [
+        "start" => "12/12/12",
+        "end" => "6/6/15",
+        "cuid" => "2000200",
+        "username" => "cjwest",
+        "serial_no" => "EF12342",
+        "type" => "West",
+        "status" => "active"
+      ],
+      [
+        "start" => "10/19/10",
+        "end" => "11/11/11",
+        "cuid" => "1000100",
+        "username" => "bcoomes",
+        "serial_no" => "LPLPS435",
+        "type" => "Cello",
+        "status" => "pending"
+      ]
+    ];
+
+    if(isset($_GET['showPending'])){
+      if(!empty($_GET['showPending'])){
+        if($_GET['showPending'] == 'false'){   
+          $contracts = [
+            [
+              "start" => "10/10/10",
+              "end" => "10/10/11",
+              "cuid" => "1000100",
+              "username" => "bcoomes",
+              "serial_no" => "LP123213",
+              "type" => "Guitar",
+              "status" => "active"
+            ],
+            [
+              "start" => "12/12/12",
+              "end" => "6/6/15",
+              "cuid" => "2000200",
+              "username" => "cjwest",
+              "serial_no" => "EF12342",
+              "type" => "West",
+              "status" => "active"
+            ]
+          ];
+        }
+      }
+    }
+
+    if(isset($_GET['showActive'])){
+      if(!empty($_GET['showActive'])){
+        if($_GET['showActive'] == 'false'){   
+          $contracts = [
+            [
+              "start" => "10/19/10",
+              "end" => "11/11/11",
+              "cuid" => "1000100",
+              "username" => "bcoomes",
+              "serial_no" => "LPLPS435",
+              "type" => "Cello",
+              "status" => "pending"
+            ]
+          ];
+        }
+      }
+    }
+
+    if(isset($_GET['showActive']) && isset($_GET['showPending'])){
+      if(!empty($_GET['showActive']) && !empty($_GET['showPending'])){
+        if($_GET['showActive'] == 'false' && $_GET['showPending'] == 'false'){
+          $contracts = [];
+        }
+      }
+    }
+
+    $response = new Response(
+      'Success',
+      'Retrieved contacts data',
+      $contracts
+    );
+    print $response->toJson();
+    return;
+  }
+
+  private function approveRequest(){
+    if($_SESSION['role'] != 'manager'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to approve a request.',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $response = new Response(
+      'Success',
+      'Approved request (not implemented)',
+      []
+    );
+    print $response->toJson();
+    return;
+  }
+
+  private function denyRequest(){
+    if($_SESSION['role'] != 'manager'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to deny a request.',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $response = new Response(
+      'Success',
+      'Denied request (not implemented)',
+      []
+    );
+    print $response->toJson();
+    return;
+  }
+
+  private function endContract(){
+    if($_SESSION['role'] != 'manager'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to end a contract.',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $response = new Response(
+      'Success',
+      'Ended contract (not implemented)',
+      []
+    );
+    print $response->toJson();
+    return;
+  }
+
 
   /*
     Expects: 
@@ -675,6 +889,22 @@ class AjaxHandler{
 
       case "delete_user":
         $this->deleteUser();
+        break;
+
+      case "get_contracts":
+        $this->getContracts();
+        break;
+
+      case "approve_request":
+        $this->approveRequest();
+        break;
+
+      case "deny_request":
+        $this->denyRequest();
+        break;
+
+      case "end_contract":
+        $this->endContract();
         break;
 
       case "sign_in":
