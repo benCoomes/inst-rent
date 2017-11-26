@@ -556,6 +556,21 @@ class AjaxHandler{
   }
 
 
+  /*
+    Expects: 
+      GET with variables 'cuid'
+    Permissions:
+      Manager: Managers may perform this action.
+      User: User may perform this action only when cuid is qs matches session cuid
+    Success:
+      Condition: Return rows from contracts table where cuid matches given cuid
+      Status Code: 200
+      Data: for each contract: 
+        start, end, cuid, username, serial_no, type, status
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+  */
   private function getUserContracts(){
     $response = new Response(
       'Success',
@@ -687,6 +702,22 @@ class AjaxHandler{
     return;
   }
 
+  /*
+    Expects: 
+      Post with variable 'serial_no, cuid'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Delete row from pending requests. Add row to active requests.
+      Status Code: 200
+      Data: data for approved contract
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error / referential integrity):
+      Status Code: 400
+      Data: serial_no, cuid
+  */
   private function approveRequest(){
     if($_SESSION['role'] != 'manager'){
       http_response_code(401);
@@ -708,6 +739,22 @@ class AjaxHandler{
     return;
   }
 
+  /*
+    Expects: 
+      Post with variable 'serial_no, cuid'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Delete row from pending requests.
+      Status Code: 200
+      Data: data for deleted request
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error / referential integrity):
+      Status Code: 400
+      Data: serial_no, cuid
+  */
   private function denyRequest(){
     if($_SESSION['role'] != 'manager'){
       http_response_code(401);
@@ -729,6 +776,22 @@ class AjaxHandler{
     return;
   }
 
+  /*
+    Expects: 
+      Post with variable 'serial_no'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Delete row from active requests.
+      Status Code: 200
+      Data: data for deleted contract
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error / referential integrity):
+      Status Code: 400
+      Data: serial_no
+  */
   private function endContract(){
     if($_SESSION['role'] != 'manager'){
       http_response_code(401);
