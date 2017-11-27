@@ -1,4 +1,66 @@
 <div class="container">
-  <h1>HOME</h1>
-  <h3>{{message}}</h2>
+  <div class="row">
+   <h2>Welcome, {{session.username}}</h2>
+  </div>
+  
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card card-clemson mb-3">
+        <h3 class="card-header">Active Contracts</h3>
+        <div class="card-body">
+          <table class="table mt-4">
+            <thead>
+              <tr>
+                <th>Start</th>
+                <th>End</th>
+                <th>Serial No</th>
+                <th>Inst. Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat='c in contracts | filter:{status : "active"}'>
+                <td>{{c.start}}</td>
+                <td>{{c.end}}</td>
+                <td>{{c.serial_no}}</td>
+                <td>{{c.type}}</td>
+              </tr>
+            </tbody> 
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card card-clemson mb-3">
+        <h3 class="card-header">Pending Contracts</h3>
+        <div class="card-body">
+          <table class="table mt-4">
+            <thead>
+              <tr>
+                <th>Start</th>
+                <th>End</th>
+                <th>Serial No</th>
+                <th>Inst. Type</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat='c in contracts | filter:{status : "pending"}'>
+                <td>{{c.start}}</td>
+                <td>{{c.end}}</td>
+                <td>{{c.serial_no}}</td>
+                <td>{{c.type}}</td>
+                <td>
+                  <button class="btn btn-danger" ng-click="deletePendingContract(c.serial_no)">Cancel</button>
+                </td>
+              </tr>
+            </tbody> 
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

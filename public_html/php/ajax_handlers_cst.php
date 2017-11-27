@@ -379,7 +379,6 @@ class AjaxHandler{
     print $response->toJson();
   }
 
-
   /*
     Expects: 
       GET with optional variables: 'search', 'showUsers', 'showManagers', 'showAdmins', and 'cuid'.
@@ -594,8 +593,6 @@ class AjaxHandler{
     return;
   }
 
-
-
   /*
     Expects: 
       Post with variable 'cuid'
@@ -649,7 +646,6 @@ class AjaxHandler{
     return;
   }
 
-
   /*
     Expects: 
       GET with variables 'cuid'
@@ -666,10 +662,49 @@ class AjaxHandler{
       Data: username of session
   */
   private function getUserContracts(){
+    if($_SESSION['cuid'] != $_GET['cuid']){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to view other users contracts',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $contracts = [
+      [
+        "start" => "10/10/10",
+        "end" => "10/10/11",
+        "cuid" => $_SESSION['cuid'],
+        "serial_no" => "LP123213",
+        "type" => "Guitar",
+        "status" => "active"
+      ],
+      [
+        "start" => "12/12/12",
+        "end" => "6/6/15",
+        "cuid" => $_SESSION['cuid'],
+        "serial_no" => "EF12342",
+        "type" => "West",
+        "status" => "active"
+      ],
+      [
+        "start" => "10/19/10",
+        "end" => "11/11/11",
+        "cuid" => $_SESSION['cuid'],
+        "serial_no" => "LPLPS435",
+        "type" => "Cello",
+        "status" => "pending"
+      ]
+    ];
+
+
     $response = new Response(
       'Success',
       'Called get user contracts (not implemented)',
-      []
+      $contracts
     );
     print $response->toJson();
     return;
@@ -692,7 +727,9 @@ class AjaxHandler{
   */
   private function getContracts(){
     if($_SESSION['role'] == 'user'){
+      // spaghettii code, woooooo!
       $this->getUserContracts();
+      return;
     } else if($_SESSION['role'] != 'manager'){
       http_response_code(401);
       $response = new Response(
@@ -878,7 +915,8 @@ class AjaxHandler{
     Expects: 
       Post with variable 'serial_no, cuid'
     Permissions:
-      Manager: Only managers may perform this action.
+      Manager: Managers may perform this action.
+      User: Users may only perform this action on their own contracts
     Success:
       Condition: Delete row from pending requests.
       Status Code: 200
@@ -891,7 +929,8 @@ class AjaxHandler{
       Data: serial_no, cuid
   */
   private function denyRequest(){
-    if($_SESSION['role'] != 'manager'){
+    if(!($_SESSION['role'] == 'manager') &&
+      !($_SESSION['role'] == 'user' && $_POST['cuid'] == $_SESSION['cuid']) ){
       http_response_code(401);
       $response = new Response(
         'Error',
