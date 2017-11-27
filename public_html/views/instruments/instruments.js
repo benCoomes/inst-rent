@@ -7,7 +7,7 @@ angular.module('instRent.instruments', ['ngRoute'])
   });
 }])
 
-.controller('InstrumentsCtrl', function InstrumentsCtrl($scope, $rootScope, $routeParams, $http, $location){
+.controller('InstrumentsCtrl', function InstrumentsCtrl($scope, $rootScope, $routeParams, $http, $httpParamSerializerJQLike, $location){
   $scope.params = $routeParams;
   $scope.instruments = [];
   $scope.instrumentTypes = ["All"];
@@ -82,9 +82,16 @@ angular.module('instRent.instruments', ['ngRoute'])
     });
   }
 
+  // include check in function on this page? create page for checkin/contract termination?
+  /*
   $scope.checkInInstrument = function(serial_no){
     console.log("checking in: " + serial_no);
     //TODO: reroute to check in form, supplying serial_no to autofill form
+  }
+  */
+
+  $scope.editInstrument = function(serial_no){
+    $location.url('editInstrument?serial_no=' + serial_no);
   }
 
   $scope.checkOutInstrument = function(serial_no, type, cond){
@@ -94,7 +101,26 @@ angular.module('instRent.instruments', ['ngRoute'])
   }
 
   $scope.deleteInstrument = function(serial_no){
-    //TODO: delete instrument. Managers only.
+    if($rootScope.session.role == 'manager'){
+      $http({
+        url: 'php/ajax_handlers_cst.php?action=delete_instrument',
+        method: 'POST',
+        data: $httpParamSerializerJQLike({'serial_no' : serial_no}),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+      .then(function onSuccess(result){
+        $scope.getInstruments();
+        console.log(result.data);
+        alert("Successfully deleted instrument.")
+      }, function onError(result){
+        alert("Failed to delete instrument.")
+        console.log(result);
+      })
+    } else {
+      alert('You do not have permission to perform this action.');
+    }
   }
 
   $scope.getInstruments();

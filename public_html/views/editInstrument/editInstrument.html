@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+            <div class="card card-clemson mb-3">
+        <h2 class="card-header">Edit Instrument</h2>
+        <div class="card-body">
+          <form class="form" id="ei-form" ng-submit="submitForm()" ng-model-options="{debounce:200}">
+            <div class="form-group row">
+              <label for="ei-serial-no" class="col-md-3 col-form-label">Serial Number</label>
+              <div class="col-md-9">
+                <input ng-disabled="disableSerialNo" type="text" id="ei-serial-no" class="form-control" ng-model="editInstForm.serial_no" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="ei-serial-no" class="col-md-3 col-form-label">Type</label>
+              <div class="col-md-9">
+                <input ng-disabled="disableType" type="text" id="ei-serial-no" class="form-control" ng-model="editInstForm.type" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="ei-cond" class="col-md-3 col-form-label">Condition</label>
+              <div class="col-md-9">
+                <input type="text" id="ei-cond" class="form-control" ng-model="editInstForm.cond" ng-change="validate()">
+              </div>
+            </div>
+            <input ng-disabled="!valid" type="submit" value="Update" class="btn btn-clemson-orange">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

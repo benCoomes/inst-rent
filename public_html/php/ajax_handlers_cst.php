@@ -194,7 +194,7 @@ class AjaxHandler{
 
   /*
     Expects: 
-      GET with optional variables: 'type', 'cond', 'search', 'available', and 'checkedOut'
+      GET with optional variables: 'serial_no', 'type', 'cond', 'search', 'available', and 'checkedOut'
     Permissions:
       User: users may only see available instruments.
       Manager: managers may see available and checked out instruments.
@@ -227,7 +227,12 @@ class AjaxHandler{
       'Get Instruments function called'
     );
 
-    if($_SESSION['role']== 'user'){
+    if($_GET['serial_no']){
+      // just set serial no requests to same inst for now
+      $lookUpResults = [];
+      $lookUpResults[] = $instruments[0];
+      $response->setData($lookUpResults);
+    } else if($_SESSION['role']== 'user'){
       $availableInstruments = [];
       foreach($instruments as $inst){
         if($inst['available']){
@@ -281,6 +286,94 @@ class AjaxHandler{
       'Success',
       'Successfully added instrument.',
       ['serial_no' => $serial_no, 'type' => $type, 'condition' => $condition]
+    );
+
+    print $response->toJson();
+  }
+
+  /*
+    Expects: 
+      Post with variables 'serial_no' and 'cond'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Update row in instruments table using given data - no errors
+      Status Code: 200
+      Data: seial_no, cond, type of updated instrument
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error):
+      Status Code: 400
+      Data: serial_no and cond from post
+  */
+  private function editInstrument(){
+    if($_SESSION['role'] != 'manager'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to update an instrument.',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $serial_no = $_POST['serial_no'];
+    $cond = $_POST['cond'];
+
+    // sql goes here
+
+    $updatedInst = [
+      "serial_no" => $serial_no,
+      "cond" => $cond
+    ];
+
+
+    $response = new Response(
+      'Success',
+      'Updated instrument.',
+      $updatedInst
+    );
+    print $response->toJson();
+    return;
+  }
+
+  /*
+    Expects: 
+      Post with variables 'serialNo'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Delete row from instruments table using given data - no errors
+      Status Code: 200
+      Data: serialNo of deleted instrument
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username
+    Failure (integrity error/ referential integrity):
+      Status Code: 400
+      Data: serialNo
+  */
+  private function deleteInstrument(){
+    // check permissions
+    if($_SESSION['role'] != 'manager'){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to add an instrument.',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    // sql here
+
+    $response = new Response(
+      'Success',
+      'Successfully added instrument.',
+      ['serial_no' => $serial_no]
     );
 
     print $response->toJson();
@@ -978,6 +1071,14 @@ class AjaxHandler{
 
       case "add_instrument":
         $this->addInstrument();
+        break;
+
+      case "edit_instrument":
+        $this->editInstrument();
+        break;
+
+      case "delete_instrument":
+        $this->deleteInstrument();
         break;
 
       case "get_users":

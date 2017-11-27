@@ -67,7 +67,7 @@
           <td ng-if="session.role == 'manager'">{{inst.available}}</td>
           <td>
               <button ng-if='inst.available && session.role=="user"' ng-click="checkOutInstrument(inst.serial_no, inst.cond, inst.type)" class="btn btn-clemson-orange">Check Out</button>
-              <button ng-if='!inst.available && session.role=="manager"' ng-click="checkInInstrument(inst.serial_no)" class="btn btn-clemson-purple">Check In</button>
+              <button ng-if='!inst.available && session.role=="manager"' ng-click="editInstrument(inst.serial_no)" class="btn btn-clemson-purple">Edit</button>
               <button ng-if='inst.available && session.role=="manager"' ng-click="deleteInstrument(inst.serial_no)" class="btn btn-danger">Delete</button>
           </td>
         </tr>
