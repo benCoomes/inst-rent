@@ -286,6 +286,7 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+
   /*
     Expects: 
       GET with optional variables: 'search', 'showUsers', 'showManagers', 'showAdmins', and 'cuid'.
@@ -704,6 +705,47 @@ class AjaxHandler{
 
   /*
     Expects: 
+      Post with variable 'serial_no', 'cuid', 'start', and 'end'
+    Permissions:
+      User: Only users may perform this action.
+    Success:
+      Condition: Add row to pending requests.
+      Status Code: 200
+      Data: cuid, serial_no, start and end for added request
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error / bad data / constraint violation):
+      Status Code: 400
+      Data: serial_no, cuid, start, end 
+  */
+  private function makeRequest(){
+    if($_SESSION['role'] != 'user' || $_SESSION['cuid'] != $_POST['cuid']){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to create a request.',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    // check dates are valid
+
+    // do sql here
+
+    $response = new Response(
+      'Success',
+      'Created request (not implemented)',
+      []
+    );
+    print $response->toJson();
+    return;
+  }
+
+  /*
+    Expects: 
       Post with variable 'serial_no, cuid'
     Permissions:
       Manager: Only managers may perform this action.
@@ -956,6 +998,10 @@ class AjaxHandler{
 
       case "get_contracts":
         $this->getContracts();
+        break;
+
+      case "make_request":
+        $this->makeRequest();
         break;
 
       case "approve_request":

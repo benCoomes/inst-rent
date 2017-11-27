@@ -7,7 +7,7 @@ angular.module('instRent.instruments', ['ngRoute'])
   });
 }])
 
-.controller('InstrumentsCtrl', function InstrumentsCtrl($scope, $rootScope, $routeParams, $http){
+.controller('InstrumentsCtrl', function InstrumentsCtrl($scope, $rootScope, $routeParams, $http, $location){
   $scope.params = $routeParams;
   $scope.instruments = [];
   $scope.instrumentTypes = ["All"];
@@ -87,9 +87,10 @@ angular.module('instRent.instruments', ['ngRoute'])
     //TODO: reroute to check in form, supplying serial_no to autofill form
   }
 
-  $scope.checkOutInstrument = function(serial_no){
+  $scope.checkOutInstrument = function(serial_no, type, cond){
     console.log("checking out: " + serial_no);
-    //TODO: reroute to check out form, supplying serial_no to autofill form
+    $location.url('makeRequest?serial_no=' + serial_no + 
+      '&cond=' + cond + '&type=' + type);
   }
 
   $scope.deleteInstrument = function(serial_no){

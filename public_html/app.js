@@ -7,6 +7,7 @@ angular.module('instRent', [
   'instRent.managerHome', 
   'instRent.adminHome',
   'instRent.addInstrument',
+  'instRent.makeRequest',
   'instRent.contracts',
   'instRent.manageUsers',
   'instRent.addUser',
