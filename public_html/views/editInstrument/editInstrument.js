@@ -16,7 +16,7 @@ angular.module('instRent.editInstrument', ['ngRoute'])
     }
 
     if($scope.params.serial_no){
-      $http.get('php/ajax_handlers_cst.php?action=get_instruments&serial_no=' + $scope.params.serial_no)
+      $http.get('php/ajax_handlers.php?action=get_instruments&serial_no=' + $scope.params.serial_no)
       .then(function onSuccess(result){
         let inst = result.data.data[0];
         console.log(result);

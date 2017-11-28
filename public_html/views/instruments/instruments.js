@@ -45,8 +45,8 @@ angular.module('instRent.instruments', ['ngRoute'])
     if($scope.filterForm.hasOwnProperty('available') && $scope.filterForm.available == false){
       qsparams = qsparams + '&available=false';
     }
-    if($scope.filterForm.checkedOut){
-      qsparams = qsparams + '&checkedout=true';
+    if($scope.filterForm.hasOwnProperty('checkedOut') && $scope.filterForm.checkedOut == false){
+      qsparams = qsparams + '&checkedout=false';
     }
     console.log('qsparams: ' +qsparams);
 

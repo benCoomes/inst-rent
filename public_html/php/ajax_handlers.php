@@ -141,8 +141,9 @@ class AjaxHandler{
     print $response->toJson();
   }
 
-  private function getAvailableInstruments(){
-    $sql = "SELECT i.serial_no serial_no, i.type type, i.cond cond FROM instruments i LEFT JOIN active_contracts ac ON i.serial_no = ac.serial_no WHERE ac.serial_no IS NULL";
+  private function getInstruments(){
+    // get instrumets from database, return as json
+    $sql = "SELECT i.serial_no serial_no, i.type type, i.cond cond, ac.cuid cuid FROM instruments i LEFT JOIN active_contracts ac ON i.serial_no = ac.serial_no WHERE 1=1";
 
     if(isset($_GET['type'])){
       $type = mysqli_real_escape_string($this->conn, $_GET['type']);
@@ -166,35 +167,15 @@ class AjaxHandler{
       $sql = $sql." AND i.serial_no ='".$serial_no."'";
     }
 
-    $result = $this->conn->query($sql);
-    if(!$result){
-      http_response_code(500);
-      $response = new Response(
-        'Error',
-        'Failed to execute query',
-        ["query" => $sql, "error" => $this->conn->error]
-      );
-      print $response->toJson();
-      return;
+    if(isset($_GET['available']) && $_GET['available'] == 'false'){
+      $sql = $sql." AND ac.cuid IS NOT NULL";
     }
 
-    $instruments = [];
-    while($row = $result->fetch_assoc()){
-      $row['available'] = True;
-      $instruments[] = $row;
+    if(($_SESSION['role'] != 'manager' || $_SESSION['role'] != 'admin') || (isset($_GET['checkedout']) && $_GET['checkedout'] == 'false')){
+      $sql = $sql." AND ac.cuid IS NULL";
     }
-    $response = new Response(
-      'Success',
-      'Got instruments',
-      $instruments
-    );
-    print $response->toJson();
-    return;
-  }
 
-  private function getInstruments(){
-    // get instrumets from database, return as json
-    $sql = "SELECT * FROM instruments";
+
     $result = $this->conn->query($sql);
     if(!$result){
       http_response_code(500);
@@ -209,6 +190,11 @@ class AjaxHandler{
     $instruments = [];
 
     while($row = $result->fetch_assoc()){
+      if(!empty($row['cuid'])){
+        $row['available'] = False;
+      } else {
+        $row['available'] = True;
+      }
       $instruments[] = $row;
     }
     $response = new Response(
@@ -330,12 +316,7 @@ class AjaxHandler{
         break;
 
       case "get_instruments":
-        if($_SESSION['role'] == 'user'){
-          $this->getAvailableInstruments();
-        } 
-        else if ($_SESSION['role'] == 'manager'){
-          $this->getInstruments();
-        }
+        $this->getInstruments();
         break;
 
       case "sign_in":
