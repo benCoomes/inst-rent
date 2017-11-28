@@ -13,6 +13,7 @@ angular.module('instRent', [
   'instRent.manageUsers',
   'instRent.addUser',
   'instRent.editUser',
+  'instRent.editProfile',
   'instRent.header'
 ])
 

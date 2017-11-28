@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+            <div class="card card-clemson mb-3">
+        <h2 class="card-header">Edit User</h2>
+        <div class="card-body">
+          <form class="form" id="ep-form" ng-submit="submitForm()" ng-model-options="{debounce:200}">
+            <div class="form-group row">
+              <label for="ep-email" class="col-md-3 col-form-label">Clemson Email</label>
+              <div class="col-md-9">
+                <input type="email" id="ep-email" class="form-control" ng-model="editUserForm.cuEmail" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="ep-fname" class="col-md-3 col-form-label">First Name</label>
+              <div class="col-md-9">
+                <input type="text" id="ep-fname" class="form-control" ng-model="editUserForm.firstName" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="ep-lname" class="col-md-3 col-form-label">Last Name</label>
+              <div class="col-md-9">
+                <input type="text" id="ep-lname" class="form-control" ng-model="editUserForm.lastName" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="ep-age" class="col-md-3 col-form-label">Age</label>
+              <div class="col-md-9">
+                <input type="number" id="ep-age" class="form-control" ng-model="editUserForm.age" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="ep-telephone" class="col-md-3 col-form-label">Telephone</label>
+              <div class="col-md-9">
+                <input type="text" id="ep-telephone" class="form-control" ng-model="editUserForm.telephone" ng-change="validate()">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="ep-address" class="col-md-3 col-form-label">Address</label>
+              <div class="col-md-9">
+                <input type="text" id="ep-address" class="form-control" ng-model="editUserForm.address" ng-change="validate()">
+              </div>
+            </div>
+            <input ng-disabled="!valid" type="submit" value="Update" class="btn btn-clemson-orange">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
