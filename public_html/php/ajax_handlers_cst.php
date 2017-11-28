@@ -161,7 +161,7 @@ class AjaxHandler{
       No defined failure states
   */
   private function getInstrumentTypes(){
-    $types = ["Trumpet", "Flute", "Tuba", "Clarinet", "French Horn", "Sousaphone", "Didgeridoo"];
+    $types = ["trumpet", "flute", "tuba", "clarinet", "french horn", "sousaphone", "didgeridoo"];
     $response = new Response(
       'Success',
       'Got instrument types',

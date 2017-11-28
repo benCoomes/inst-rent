@@ -73,9 +73,9 @@ class AjaxHandler{
     $config = json_decode(fread($configFile, filesize($configLoc)), true);
     fclose($configFile);
 
-    $conn = new mysqli($config["host"], $config["username"], $config["password"]);
+    $this->conn = new mysqli($config["host"], $config["username"], $config["password"], $config["database"]);
 
-    if($conn->connect_error){
+    if($this->conn->connect_error){
       $response = new Response();
       $response->setMsg('Failed to connect to database');
       $response->setStatus('Error');
@@ -141,13 +141,83 @@ class AjaxHandler{
     print $response->toJson();
   }
 
-  private function getInstruments(){
-    // get instrumets from database, return as json
+  private function getAvailableInstruments(){
+    $sql = "SELECT i.serial_no serial_no, i.type type, i.cond cond FROM instruments i LEFT JOIN active_contracts ac ON i.serial_no = ac.serial_no WHERE ac.serial_no IS NULL";
+
+    if(isset($_GET['type'])){
+      $type = mysqli_real_escape_string($this->conn, $_GET['type']);
+      $sql = $sql." AND i.type = '".$type."'";
+    }
+
+    if(isset($_GET['cond'])){
+      $cond = mysqli_real_escape_string($this->conn, $_GET['cond']);
+      $sql = $sql." AND i.cond='".$cond."'";
+    }
+
+    if(isset($_GET['search'])){
+      $search = mysqli_real_escape_string($this->conn, $_GET['search']);
+      $sql = $sql." AND (i.serial_no LIKE '%".$search."%' 
+        OR i.type LIKE '%".$search."%' 
+        OR i.cond LIKE '%".$search."%')";
+    }
+
+    if(isset($_GET['serial_no'])){
+      $serial_no = mysqli_real_escape_string($this->conn, $_GET['serial_no']);
+      $sql = $sql." AND i.serial_no ='".$serial_no."'";
+    }
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(500);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        ["query" => $sql, "error" => $this->conn->error]
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $instruments = [];
+    while($row = $result->fetch_assoc()){
+      $row['available'] = True;
+      $instruments[] = $row;
+    }
     $response = new Response(
       'Success',
-      'Get Instruments function called'
+      'Got instruments',
+      $instruments
     );
     print $response->toJson();
+    return;
+  }
+
+  private function getInstruments(){
+    // get instrumets from database, return as json
+    $sql = "SELECT * FROM instruments";
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(500);
+      $response = new Response(
+        'Error',
+        'Failed to execute query'
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $instruments = [];
+
+    while($row = $result->fetch_assoc()){
+      $instruments[] = $row;
+    }
+    $response = new Response(
+      'Success',
+      'Got instruments',
+      $instruments
+    );
+    print $response->toJson();
+
   }
 
 
@@ -260,7 +330,12 @@ class AjaxHandler{
         break;
 
       case "get_instruments":
-        $this->getInstruments();
+        if($_SESSION['role'] == 'user'){
+          $this->getAvailableInstruments();
+        } 
+        else if ($_SESSION['role'] == 'manager'){
+          $this->getInstruments();
+        }
         break;
 
       case "sign_in":
@@ -294,7 +369,7 @@ requireQSV("action");
 $action = $_GET["action"];
 
 // process action with AjaxHandler instance
-$ajaxHandler = new AjaxHandler('../../config/dbconfig.json');
+$ajaxHandler = new AjaxHandler('../../config/localdb.json');
 $ajaxHandler->doAction($action);
 
 ?>

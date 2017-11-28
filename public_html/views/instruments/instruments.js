@@ -50,8 +50,9 @@ angular.module('instRent.instruments', ['ngRoute'])
     }
     console.log('qsparams: ' +qsparams);
 
-    $http.get('php/ajax_handlers_cst.php?' + qsparams)
+    $http.get('php/ajax_handlers.php?' + qsparams)
     .then(function onSuccess(result){
+      console.log(result.data);
       $scope.instruments = result.data.data;
     }, function onError(result){
       $scope.instruments = [];
