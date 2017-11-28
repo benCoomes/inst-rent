@@ -71,7 +71,7 @@ if($conn->connect_error){
 		(8000000,'tmorris','password6','student','tmorris@g.clemson.edu','Tony','Morris'),
 		(9000000,'sadams','password7','student','sadams@g.clemson.edu','Sam','Adams'),
 		(9999999,'sfalls','password8','student','sfalls@g.clemson.edu','Sarah','McFalls')";*/ 
-	$query1 = "LOAD DATA LOCAL INFILE './test_data/student_big_data.csv' INTO TABLE users FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES ";  
+	$query1 = "LOAD DATA LOCAL INFILE './test_data/student_big_data.csv' INTO TABLE users FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'";  
 /*	$query2 = "INSERT INTO instruments (serial_no,type,cond) VALUES
 		('SN0001','trumpet','good'),
 		('SN0002','trumpet','good'),
@@ -83,22 +83,22 @@ if($conn->connect_error){
       ('SN0008','tuba','good'),
       ('SN0009','saxophone','good'),
       ('SN0010','sousaphone','needs repair')"; */
-	$query2 = "LOAD DATA LOCAL INFILE './test_data/instruments_big_data.csv' INTO TABLE instruments FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES; "; 
+	$query2 = "LOAD DATA LOCAL INFILE './test_data/instruments_big_data.csv' INTO TABLE instruments FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'; "; 
 /*   $query3 = "INSERT INTO active_contracts(start_date,end_date,cuid,serial_no) VALUES
       ('2017-08-01','2017-12-01',1000000,'SN0001'),
       ('1999-01-01','2050-01-01',3000000,'SN0002'),
       ('2016-08-22','2020-05-10',9999999,'SN0008'),
       ('2014-01-12','2014-12-13',2000000,'SN0009')"; */ 
-	$query4 = "LOAD DATA LOCAL INFILE './test_data/rental_contracts_big_data.csv' INTO TABLE pending_contracts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES; "; 
+	$query3 = "LOAD DATA LOCAL INFILE './test_data/active_contract_big_data.csv' INTO TABLE active_contracts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'; "; 
 /*   $query4 = "INSERT INTO pending_contracts(start_date, end_date, cuid, serial_no) VALUES 
       ('2018-01-16','2018-05-05',1000000,'SN0001'),
       ('2017-08-01','2017-12-01',8000000,'SN0001'),
       ('2017-10-13','2017-10-30',9000000,'SN0008'),
       ('2018-02-14','2018-10-09',4000000,'SN0010')"; */
-	//$query4 = "LOAD DATA INFILE 'filename' INTO TABLE tblname FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES; " 
+	$query4 = "LOAD DATA LOCAL INFILE './test_data/rental_contracts_big_data.csv' INTO TABLE pending_contracts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'; " ;
    $conn->query($query1) or die("Failed to populate table1: ".$conn->error);
    $conn->query($query2) or die("Failed to populate table2: ".$conn->error);
-  // $conn->query($query3) or die("Failed to populate table3: ".$conn->error);
+   $conn->query($query3) or die("Failed to populate table3: ".$conn->error);
    $conn->query($query4) or die("Failed to populate table4: ".$conn->error);
 
    echo "Success.\n";

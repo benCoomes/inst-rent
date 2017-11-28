@@ -31,6 +31,7 @@ int main() {
 				endl; 
 	}
 	ofstream rentalCont;
+	ofstream activeCont;
 	rentalCont.open("rental_contracts_big_data.csv");
 	for(int i = 0; i < 150; i++)
 	{
@@ -75,7 +76,32 @@ int main() {
 			<< "," << (rand()%150) + 1000000 << "," 
 			<< (rand()%150) + 1000 << "," << boolean[rand()%2] << endl; 
 	} 
+	activeCont.open("active_contract_big_data.csv");
+	int instrument = 1000;
+	while(instrument <= 1150)
+	{
+		int startYear = 2017 - rand()%50;
+		int endYear = rand()%50 + 2018;
+		int startMonth = rand()%12 + 1;
+		int endMonth = rand()%12 + 1;
+		int startDay = rand()%28 + 1;
+		int endDay = rand()%28 + 1;
+		if(startYear == 2017)
+		{
+			if(startMonth > 11)
+			{
+				startMonth--;
+			}
+		}
+		activeCont << startYear << "-" << startMonth << "-" << startDay
+			<< "," << endYear << "-" << endMonth << "-" << endDay
+			<< "," << instrument << "," << (rand()%150) + 1000000
+			<< endl;
+		instrument += (rand()%2) + 1;
+		
+	}
 	students.close();
 	instruments.close();
 	rentalCont.close();
+	activeCont.close();
 }
