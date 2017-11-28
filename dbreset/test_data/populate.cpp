@@ -95,7 +95,7 @@ int main() {
 		}
 		activeCont << startYear << "-" << startMonth << "-" << startDay
 			<< "," << endYear << "-" << endMonth << "-" << endDay
-			<< "," << instrument << "," << (rand()%150) + 1000000
+			<< "," << (rand()%150) + 1000000 << "," << instrument
 			<< endl;
 		instrument += (rand()%2) + 1;
 		
