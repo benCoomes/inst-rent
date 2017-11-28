@@ -63,7 +63,7 @@ angular.module('instRent.instruments', ['ngRoute'])
 
   $scope.getInstrumentTypes = function(){
     let qsparams = 'action=get_instrument_types';
-    $http.get('php/ajax_handlers_cst.php?' + qsparams)
+    $http.get('php/ajax_handlers.php?' + qsparams)
     .then(function onSuccess(result){
       $scope.instrumentTypes = result.data.data;
     }, function onError(result){
@@ -74,7 +74,7 @@ angular.module('instRent.instruments', ['ngRoute'])
 
   $scope.getInstrumentConditions = function(){
     let qsparams = 'action=get_instrument_conditions';
-    $http.get('php/ajax_handlers_cst.php?' + qsparams)
+    $http.get('php/ajax_handlers.php?' + qsparams)
     .then(function onSuccess(result){
       $scope.instrumentConditions = result.data.data;
     }, function onError(result){

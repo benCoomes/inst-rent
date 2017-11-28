@@ -163,7 +163,7 @@ class AjaxHandler{
       $sql = $sql." AND ac.cuid IS NOT NULL";
     }
 
-    if(($_SESSION['role'] != 'manager' || $_SESSION['role'] != 'admin') || (isset($_GET['checkedout']) && $_GET['checkedout'] == 'false')){
+    if(($_SESSION['role'] == 'user') || (isset($_GET['checkedout']) && $_GET['checkedout'] == 'false')){
       $sql = $sql." AND ac.cuid IS NULL";
     }
 
@@ -239,6 +239,22 @@ class AjaxHandler{
     } 
   }
 
+  /*
+    Expects: 
+      Post with variables 'serial_no'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Delete row from instruments table
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username
+    Failure (integrity error/ referential integrity):
+      Status Code: 400
+      Data: serialNo
+  */
   private function deleteInstrument(){
     $serial_no = mysqli_real_escape_string($this->conn, $_POST['serial_no']);
     $sql = "DELETE FROM instruments WHERE serial_no='".$serial_no."'";
@@ -259,6 +275,86 @@ class AjaxHandler{
       );
       print $response->toJson();
     } 
+  }
+
+  /*
+    Expects: 
+      No expectations
+    Permissions:
+      Must be an active session
+    Success:
+      Condition: Get types of instruments present in instruments table
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: None
+  */
+  private function getInstrumentTypes(){
+    $sql = "SELECT DISTINCT type FROM instruments";
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+      return;
+    } 
+
+    $types = [];
+    while($row = $result->fetch_assoc()){
+      $types[] = $row['type'];
+    }
+
+    $response = new Response(
+      'Success',
+      'Got instrument types.',
+      $types
+    );
+    print $response->toJson();
+  }
+
+  /*
+    Expects: 
+      No expectations
+    Permissions:
+      Must be an active session
+    Success:
+      Condition: Get conditions of instruments present in instruments table
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: None
+  */
+  private function getInstrumentConditions(){
+    $sql = "SELECT DISTINCT cond FROM instruments";
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+      return;
+    } 
+
+    $conds = [];
+    while($row = $result->fetch_assoc()){
+      $conds[] = $row['cond'];
+    }
+
+    $response = new Response(
+      'Success',
+      'Got instrument conditions.',
+      $conds
+    );
+    print $response->toJson();
   }
 
   /*
@@ -406,6 +502,22 @@ class AjaxHandler{
           $this->deleteInstrument();
         } else {
           $this->unauthorized('Only managers can delete instruments.');
+        }
+        break;
+
+      case "get_instrument_types":
+        if(isset($_SESSION['cuid'])){
+          $this->getInstrumentTypes();
+        } else {
+          $this->unauthorized('Must be signed in to access instrument types');
+        }
+        break;
+
+      case "get_instrument_conditions":
+        if(isset($_SESSION['cuid'])){
+          $this->getInstrumentConditions();
+        } else {
+          $this->unauthorized('Must be signed in to access instrument conditions');
         }
         break;
 
