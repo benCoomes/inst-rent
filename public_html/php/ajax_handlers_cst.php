@@ -202,9 +202,7 @@ class AjaxHandler{
     Success:
       Condition: query completed, even if empty
       Status Code: 200
-      Data: Instruments returned by query. Select by 'type', 'cond', and 'search' if specified.
-        If 'available' is in QS, do not get available instruments (getting available instruments is default)
-        If 'checkedOut' is in QS, get checked out instruments (do not get them by default)
+      Data: Instruments returned by query. Select by 'type', 'cond', and 'search', 'available', and 'checkedOut' if specified.
     Failure: 
       No defined failure states
   */
