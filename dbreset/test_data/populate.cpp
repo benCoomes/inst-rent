@@ -6,7 +6,7 @@ using namespace std;
 
 int main() {
 	string instName [] = {"Trumpet", "Trombone", "Tenor sax", "Alto sax", "Piccolo", "Clarinet", "Sousaphone", "Baritone", "Mellophone"};
-	string condition [] = {"Excellent", "Good", "Fair", "Poor", "Broken"};
+	string condition [] = {"needs repair", "Good", "Fair", "Poor", "new"};
 	string firstName [] = {"Bob", "Bill", "Gina", "Jennifer", "Tom", "George", "Chris", "Caroline", "Rachel", "Jill"};
 	string lastName [] = {"Smith", "Vasquez", "Todd", "Adams", "Willis", "Green", "Doofenshmirtz", "Hill"};
 	string role [] = {"student", "student", "student", "student", "manager", "manager", "admin"};
@@ -25,8 +25,8 @@ int main() {
 		string cond = condition[rand()%5];
 		students << cuid++ <<   "," << fName + lName << "," << 
 			lName + fName << "," << role[rand()%7] << "," << 
-			fName + lName + "@g.clemson.edu" << "," << 
-			fName << "," << lName << endl;
+			fName << "," << lName << "," << 
+			fName + lName + "@g.clemson.edu" << endl;
 		instruments << serialNo++ <<  "," << inst << "," << cond << 
 				endl; 
 	}
