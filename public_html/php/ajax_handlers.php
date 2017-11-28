@@ -135,7 +135,13 @@ class AjaxHandler{
   */
   private function getInstruments(){
     // get instrumets from database, return as json
-    $sql = "SELECT i.serial_no serial_no, i.type type, i.cond cond, ac.cuid cuid FROM instruments i LEFT JOIN active_contracts ac ON i.serial_no = ac.serial_no WHERE 1=1";
+    $sql = "SELECT 
+      i.serial_no serial_no, 
+      i.type type, 
+      i.cond cond, 
+      (i.serial_no NOT IN (SELECT DISTINCT serial_no FROM active_contracts)) AS available,
+      (i.serial_no IN (SELECT DISTINCT serial_no FROM pending_contracts)) AS pending
+     FROM instruments i WHERE 1=1";
 
     if(isset($_GET['type'])){
       $type = mysqli_real_escape_string($this->conn, $_GET['type']);
@@ -160,13 +166,12 @@ class AjaxHandler{
     }
 
     if(isset($_GET['available']) && $_GET['available'] == 'false'){
-      $sql = $sql." AND ac.cuid IS NOT NULL";
+      $sql = $sql." AND i.serial_no IN (SELECT DISTINCT serial_no FROM active_contracts)";
     }
 
     if(($_SESSION['role'] == 'user') || (isset($_GET['checkedout']) && $_GET['checkedout'] == 'false')){
-      $sql = $sql." AND ac.cuid IS NULL";
+      $sql = $sql." AND i.serial_no NOT IN (SELECT DISTINCT serial_no FROM active_contracts)";
     }
-
 
     $result = $this->conn->query($sql);
     if(!$result){
@@ -181,22 +186,26 @@ class AjaxHandler{
     }
 
     $instruments = [];
-
     while($row = $result->fetch_assoc()){
-      if(!empty($row['cuid'])){
+      if($row['available'] == 0){
         $row['available'] = False;
       } else {
         $row['available'] = True;
       }
+      if($row['pending'] == 0){
+        $row['pending'] = False;
+      } else {
+        $row['pending'] = True;
+      }
       $instruments[] = $row;
     }
+
     $response = new Response(
       'Success',
       'Got instruments',
       $instruments
     );
     print $response->toJson();
-
   }
 
   /*
@@ -393,7 +402,6 @@ class AjaxHandler{
     $response = new Response($status, $msg, $data);
     print $response->toJson();
   }
-
 
   /*
     Expects: 
