@@ -202,7 +202,7 @@ class AjaxHandler{
     Success:
       Condition: query completed, even if empty
       Status Code: 200
-      Data: Instruments returned by query. Select by 'type', 'cond', and 'search', 'available', and 'checkedOut' if specified.
+      Data: Instruments returned by query. Filter by 'type', 'cond', and 'search', 'available', and 'checkedOut' if specified.
     Failure: 
       No defined failure states
   */
@@ -295,9 +295,9 @@ class AjaxHandler{
     Permissions:
       Manager: Only managers may perform this action.
     Success:
-      Condition: Update row in instruments table using given data - no errors
+      Condition: Update row in instruments table using given data
       Status Code: 200
-      Data: seial_no, cond, type of updated instrument
+      Data: none
     Failure (insuffecient permission):
       Status Code: 401
       Data: username of session

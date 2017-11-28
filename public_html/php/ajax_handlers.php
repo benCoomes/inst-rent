@@ -2,28 +2,6 @@
 session_start();
 
 
-/***********************************
-  Utility Functions
-***********************************/
-
-// require that a query string variable with the name $qsv exists
-function requireQSV($qsv){
-  $present = False;
-
-  if(isset($_GET[$qsv])){
-    if(!empty($_GET[$qsv])){
-      $present = True;
-    }
-  }
-
-  if(!$present){
-    http_response_code(400);
-    die('Error: The query string variable '.$qsv.' is not present.');
-  }
-}
-
-//TODO: create require Post Variable
-
 /*************************************
   Classes
 *************************************/
@@ -141,6 +119,20 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  /*
+    Expects: 
+      GET with optional variables: 'serial_no', 'type', 'cond', 'search', 'available', and 'checkedOut'
+    Permissions:
+      User: users may only see available instruments.
+      Manager: managers may see available and checked out instruments.
+      Admins: Admins may see available and checked out instruments.
+    Success:
+      Condition: query completed, even if empty
+      Status Code: 200
+      Data: Instruments returned by query. Filter by 'type', 'cond', and 'search', 'available', and 'checkedOut' if specified.
+    Failure: 
+      No defined failure states
+  */
   private function getInstruments(){
     // get instrumets from database, return as json
     $sql = "SELECT i.serial_no serial_no, i.type type, i.cond cond, ac.cuid cuid FROM instruments i LEFT JOIN active_contracts ac ON i.serial_no = ac.serial_no WHERE 1=1";
@@ -178,10 +170,11 @@ class AjaxHandler{
 
     $result = $this->conn->query($sql);
     if(!$result){
-      http_response_code(500);
+      http_response_code(400);
       $response = new Response(
         'Error',
-        'Failed to execute query'
+        'Failed to execute query',
+        $this->conn->error
       );
       print $response->toJson();
       return;
@@ -206,6 +199,45 @@ class AjaxHandler{
 
   }
 
+  /*
+    Expects: 
+      Post with variables 'serial_no' and 'cond'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Update condition for instrument with matching serial number
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error):
+      Status Code: 400
+      Data: serial_no and cond from post
+  */
+  private function editInstrument(){
+    $cond = mysqli_real_escape_string($this->conn, $_POST['cond']);
+    $cond = strtolower($cond);
+    $serial_no = mysqli_real_escape_string($this->conn, $_POST['serial_no']);
+    $sql = "UPDATE instruments SET cond='".$cond."' WHERE serial_no='".$serial_no."'";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+    } else {
+      $response = new Response(
+        'Success',
+        'Successfully updated instrument.'
+      );
+      print $response->toJson();
+    } 
+  }
 
   /*
     Expects: 
@@ -295,6 +327,17 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  private function unauthorized($msg){
+    http_response_code(401);
+      $response = new Response(
+        'Error',
+        $msg,
+        ["username" => $_SESSION["username"], "role" => $_SESSION['role']]
+      );
+      print $response->toJson();
+      return;
+  }
+
   private function defaultAction(){
     http_response_code(400);
     $action = $_GET["action"];
@@ -316,7 +359,22 @@ class AjaxHandler{
         break;
 
       case "get_instruments":
-        $this->getInstruments();
+        if(isset($_SESSION['cuid'])){
+          $this->getInstruments();
+        } else {
+          $this->unauthorized('Must be signed in to access instruments.');
+        }
+        break;
+
+      case "edit_instrument":
+        requirePost('serial_no');
+        requirePost('cond');
+
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'manager'){
+          $this->editInstrument();
+        } else {
+          $this->unauthorized("Only managers can edit instruments.");
+        }
         break;
 
       case "sign_in":
@@ -339,12 +397,59 @@ class AjaxHandler{
   }
 }
 
+
+/***********************************
+  Utility Functions
+***********************************/
+
+// require that a query string variable with the name $name exists and is not empty
+function requireGet($name){
+  $present = False;
+
+  if(isset($_GET[$name])){
+    if(!empty($_GET[$name])){
+      $present = True;
+    }
+  }
+
+  if(!$present){
+    http_response_code(400);
+    $response = new Response(
+      'Error',
+      'The POST variable '.$qsv.' is not present.'
+    );
+    print $reponse->toJson();
+    die();
+  }
+}
+
+function requirePost($name){
+  $present = False;
+
+  if(isset($_POST[$name])){
+    if(!empty($_POST[$name])){
+      $present = True;
+    }
+  }
+
+  if(!$present){
+    http_response_code(400);
+    $response = new Response(
+      'Error',
+      'The POST variable '.$qsv.' is not present.'
+    );
+    print $reponse->toJson();
+    die();
+  }
+}
+
+
 /********************************************
   Start Script
 ********************************************/
 
 // check for required qs variables
-requireQSV("action");
+requireGET("action");
 
 // get query string variables
 $action = $_GET["action"];

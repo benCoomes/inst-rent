@@ -57,7 +57,7 @@ angular.module('instRent.editInstrument', ['ngRoute'])
   $scope.submitForm = function(){
     if($rootScope.session.role == 'manager'){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=edit_instrument',
+        url: 'php/ajax_handlers.php?action=edit_instrument',
         method: 'POST',
         data: $httpParamSerializerJQLike($scope.editInstForm),
         headers: {
