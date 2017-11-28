@@ -239,6 +239,28 @@ class AjaxHandler{
     } 
   }
 
+  private function deleteInstrument(){
+    $serial_no = mysqli_real_escape_string($this->conn, $_POST['serial_no']);
+    $sql = "DELETE FROM instruments WHERE serial_no='".$serial_no."'";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+    } else {
+      $response = new Response(
+        'Success',
+        'Successfully deleted instrument.'
+      );
+      print $response->toJson();
+    } 
+  }
+
   /*
     Expects: 
       Post with variables 'username' and 'password'
@@ -374,6 +396,16 @@ class AjaxHandler{
           $this->editInstrument();
         } else {
           $this->unauthorized("Only managers can edit instruments.");
+        }
+        break;
+
+      case "delete_instrument":
+        requirePost('serial_no');
+
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'manager'){
+          $this->deleteInstrument();
+        } else {
+          $this->unauthorized('Only managers can delete instruments.');
         }
         break;
 

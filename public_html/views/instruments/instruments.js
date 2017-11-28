@@ -104,7 +104,7 @@ angular.module('instRent.instruments', ['ngRoute'])
   $scope.deleteInstrument = function(serial_no){
     if($rootScope.session.role == 'manager'){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=delete_instrument',
+        url: 'php/ajax_handlers.php?action=delete_instrument',
         method: 'POST',
         data: $httpParamSerializerJQLike({'serial_no' : serial_no}),
         headers: {
