@@ -379,6 +379,38 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  private function getProfileData(){
+    if(!isset($_GET['cuid']) || $_GET['cuid'] != $_SESSION['cuid']){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to view users',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+    }
+
+    $userData = [
+      [
+        "cuid" => "2000200",
+        "cuEmail" => "bcoomes@g.clemson.edu",
+        "firstName" => "Ben",
+        "lastName" => "Coomes",
+        "age" => 21,
+        "telephone" => "864-999-2180",
+        "address" => "251 Happy Rock Lane, Clemson, SC"
+      ]
+    ];
+
+    $response = new Response(
+      'Success',
+      'User data retrieved',
+      $userData
+    );
+    print $response->toJson();
+    return;
+  }
+
   /*
     Expects: 
       GET with optional variables: 'search', 'showUsers', 'showManagers', 'showAdmins', and 'cuid'.
@@ -396,7 +428,10 @@ class AjaxHandler{
       data: session username 
   */
   private function getUsers(){
-    if($_SESSION['role'] != 'admin'){
+    if($_SESSION['role'] == 'user'){
+      $this->getProfileData();
+      return;
+    } else if($_SESSION['role'] != 'admin'){
       http_response_code(401);
       $response = new Response(
         'Error',
@@ -474,6 +509,28 @@ class AjaxHandler{
     return;
   }
 
+  private function editProfile(){
+    if(!isset($_POST['cuid']) || $_POST['cuid'] != $_SESSION['cuid']){
+      http_response_code(401);
+      $response = new Response(
+        'Error',
+        'User does not have permission to edit other users',
+        ["username" => $_SESSION["username"]]
+      );
+      print $response->toJson();
+    }
+
+    // sql 
+
+    $response = new Response(
+      'Success',
+      'Updated profile.'
+    );
+    print $response->toJson();
+    return;
+
+  }
+
   /*
     Expects: 
       Post with variables shown in function body, pasword and passwordConfirm optional.
@@ -491,6 +548,10 @@ class AjaxHandler{
       Data: all user data from post
   */
   private function editUser(){
+    if($_SESSION['role'] == 'user'){
+      $this->editProfile();
+      return;
+    }
     if($_SESSION['role'] != 'admin'){
       http_response_code(401);
       $response = new Response(

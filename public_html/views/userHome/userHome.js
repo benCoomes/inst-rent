@@ -7,7 +7,7 @@ angular.module('instRent.userHome', ['ngRoute'])
   });
 }])
 
-.controller('UserHomeCtrl', function UserHomeCtrl($scope, $rootScope, $http, $httpParamSerializerJQLike){
+.controller('UserHomeCtrl', function UserHomeCtrl($scope, $rootScope, $location, $http, $httpParamSerializerJQLike){
   $scope.getContracts = function(){
     $http.get('php/ajax_handlers_cst.php?action=get_contracts&cuid=' + $rootScope.session.cuid)
     .then(function onSuccess(result){
@@ -18,6 +18,10 @@ angular.module('instRent.userHome', ['ngRoute'])
       console.log('failed to get contracts');
       console.log(result);
     })
+  }
+
+  $scope.editProfile = function(){
+    $location.url('editProfile');
   }
 
   $scope.deletePendingContract = function(serial_no){
