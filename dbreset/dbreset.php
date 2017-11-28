@@ -33,7 +33,8 @@ if($conn->connect_error){
       role enum('student','manager','admin') NOT NULL,
 		first_name varchar(20) NOT NULL,
 		last_name varchar(20) NOT NULL,
-		email varchar(20) UNIQUE NOT NULL)";
+		email varchar(20) UNIQUE NOT NULL,
+		address varchar(200) NOT NULL)";
 	$query2 = "CREATE TABLE instruments(
 		serial_no varchar(20) PRIMARY KEY NOT NULL,
 		type varchar(20) NOT NULL,
@@ -71,7 +72,7 @@ if($conn->connect_error){
 		(8000000,'tmorris','password6','student','tmorris@g.clemson.edu','Tony','Morris'),
 		(9000000,'sadams','password7','student','sadams@g.clemson.edu','Sam','Adams'),
 		(9999999,'sfalls','password8','student','sfalls@g.clemson.edu','Sarah','McFalls')";*/ 
-	$query1 = "LOAD DATA LOCAL INFILE './test_data/student_big_data.csv' INTO TABLE users FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'";  
+	$query1 = "LOAD DATA LOCAL INFILE './test_data/student_big_data.csv' INTO TABLE users FIELDS TERMINATED BY '|' LINES TERMINATED BY '\n'";  
 /*	$query2 = "INSERT INTO instruments (serial_no,type,cond) VALUES
 		('SN0001','trumpet','good'),
 		('SN0002','trumpet','good'),

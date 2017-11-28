@@ -10,6 +10,9 @@ int main() {
 	string firstName [] = {"Bob", "Bill", "Gina", "Jennifer", "Tom", "George", "Chris", "Caroline", "Rachel", "Jill"};
 	string lastName [] = {"Smith", "Vasquez", "Todd", "Adams", "Willis", "Green", "Doofenshmirtz", "Hill"};
 	string role [] = {"student", "student", "student", "student", "manager", "manager", "admin"};
+	string address [] = {"Mulberry st", "Lois ln", "Linco ln", "Be st", "Round cir"};
+	string city [] = {"Chernobyl", "Minas Tirith", "Clemson", "Columbia", "Gungan", "City city"};
+	string state [] = {"Ofmind", "Gondor", "Narnia", "South Carolina", "Solid", "Plasma"};
 	string boolean [] = {"true", "false"};
 	ofstream students;
 	int cuid = 1000000;
@@ -23,10 +26,12 @@ int main() {
 		string lName = lastName[rand()%8];
 		string inst = instName[rand()%9];
 		string cond = condition[rand()%5];
-		students << cuid++ <<   "," << fName + lName << "," << 
-			lName + fName << "," << role[rand()%7] << "," << 
-			fName << "," << lName << "," << 
-			fName + lName + "@g.clemson.edu" << endl;
+		students << cuid++ <<   "|" << fName + lName << "|" << 
+			lName + fName << "|" << role[rand()%7] << "|" << 
+			fName << "|" << lName << "|" << 
+			fName + lName + "@g.clemson.edu" << "|" << 
+			rand()%9000 + 1000 << " " << address[rand()%5] << 
+			", " << city[rand()%6] << ", "<< state[rand()%6]  << endl;
 		instruments << serialNo++ <<  "," << inst << "," << cond << 
 				endl; 
 	}
