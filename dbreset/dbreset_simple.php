@@ -30,10 +30,13 @@ if($conn->connect_error){
 		cuid int PRIMARY KEY NOT NULL, 
 		username varchar(20) UNIQUE NOT NULL,
 		password varchar(20) NOT NULL,
-      role enum('user','manager','admin') NOT NULL,
-		first_name varchar(20) NOT NULL,
-		last_name varchar(20) NOT NULL,
-		email varchar(20) UNIQUE NOT NULL)";
+    role enum('user','manager','admin') NOT NULL,
+		first_name varchar(20) NULL,
+		last_name varchar(20) NULL,
+    age int NULL,
+    phone varchar(20) NULL,
+    address varchar(50) NULL,
+		email varchar(40) UNIQUE NOT NULL)";
 	$query2 = "CREATE TABLE instruments(
 		serial_no varchar(20) PRIMARY KEY NOT NULL,
 		type varchar(20) NOT NULL,
