@@ -53,11 +53,11 @@ class Response{
   }
 
   public function toJson(){
-    $struct = [
+    $struct = array(
       "msg" => $this->msg,
       "status" => $this->status,
       "data" => $this->data
-    ];
+    );
 
     return json_encode($struct);
   }
@@ -74,13 +74,13 @@ class AjaxHandler{
 
   // create pseudo DB
   function __construct($configLoc){
-    $this->users = [
-      ['username' => 'bcoomes', 'password' => 'bcpass', 'role' => 'user', 'cuid' => 1000100],
-      ['username' => 'cjwest', 'password' => 'cwpass', 'role' => 'user', 'cuid' => 2000200],
-      ['username' => 'admin', 'password' => 'ampass', 'role' => 'admin', 'cuid' => 3000300],
-      ['username' => 'speedy', 'password' => 'sppass', 'role' => 'manager', 'cuid' => 4000400],
-      ['username' => 'rando', 'password' => 'rdpass', 'role' => 'manager', 'cuid' => 5000500]
-    ];
+    $this->users = array(
+      array('username' => 'bcoomes', 'password' => 'bcpass', 'role' => 'user', 'cuid' => 1000100),
+      array('username' => 'cjwest', 'password' => 'cwpass', 'role' => 'user', 'cuid' => 2000200),
+      array('username' => 'admin', 'password' => 'ampass', 'role' => 'admin', 'cuid' => 3000300),
+      array('username' => 'speedy', 'password' => 'sppass', 'role' => 'manager', 'cuid' => 4000400),
+      array('username' => 'rando', 'password' => 'rdpass', 'role' => 'manager', 'cuid' => 5000500)
+    );
 
   }
 
@@ -128,21 +128,21 @@ class AjaxHandler{
     if(array_key_exists('cuid', $_SESSION)){
       $response->setStatus('Success');
       $response->setMsg('Session data retrieved.');
-      $response->setData([
+      $response->setData(array(
         'username' => $_SESSION['username'],
         'role' => $_SESSION['role'],
         'cuid' => $_SESSION['cuid'],
         'signedIn' => True
-      ]);
+      ));
     } else {
       $response->setStatus('Success');
       $response->setMsg('No session data');
-      $response->setData([
+      $response->setData(array(
         'username' => Null,
         'role' => Null,
         'cuid' => Null,
         'signedIn' => False
-      ]);
+      ));
     }
 
     print $response->toJson();
@@ -160,8 +160,9 @@ class AjaxHandler{
     Failure: 
       No defined failure states
   */
+      /*
   private function getInstrumentTypes(){
-    $types = ["trumpet", "flute", "tuba", "clarinet", "french horn", "sousaphone", "didgeridoo"];
+    $types = array("trumpet", "flute", "tuba", "clarinet", "french horn", "sousaphone", "didgeridoo");
     $response = new Response(
       'Success',
       'Got instrument types',
@@ -169,7 +170,7 @@ class AjaxHandler{
     );
     print $response->toJson();
   }
-
+*/
   /*
     Expects: 
       GET with no variables
@@ -182,8 +183,9 @@ class AjaxHandler{
     Failure: 
       No defined failure statues
   */
+      /*
   private function getInstrumentConditions(){
-    $conditions = ["Needs Repair", "Poor", "Fair", "Good", "Excellent"];
+    $conditions = array("Needs Repair", "Poor", "Fair", "Good", "Excellent");
     $response = new Response(
       'Success',
       'Got instrument conditions',
@@ -191,7 +193,7 @@ class AjaxHandler{
     );
     print $response->toJson();
   }
-
+*/
   /*
     Expects: 
       GET with optional variables: 'serial_no', 'type', 'cond', 'search', 'available', and 'checkedOut'
@@ -206,6 +208,7 @@ class AjaxHandler{
     Failure: 
       No defined failure states
   */
+      /*
   private function getInstruments(){
     // return fake instrument list
     $instruments = [
@@ -245,7 +248,7 @@ class AjaxHandler{
 
     print $response->toJson();
   }
-
+*/
   /*
     Expects: 
       Post with variables 'serialNo', 'type' and 'condition'
@@ -262,6 +265,7 @@ class AjaxHandler{
       Status Code: 400
       Data: serialNo, type, condition
   */
+      /*
   private function addInstrument(){
     // check permissions
     if($_SESSION['role'] != 'manager'){
@@ -288,7 +292,7 @@ class AjaxHandler{
 
     print $response->toJson();
   }
-
+*/
   /*
     Expects: 
       Post with variables 'serial_no' and 'cond'
@@ -305,6 +309,7 @@ class AjaxHandler{
       Status Code: 400
       Data: serial_no and cond from post
   */
+      /*
   private function editInstrument(){
     if($_SESSION['role'] != 'manager'){
       http_response_code(401);
@@ -336,7 +341,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
   /*
     Expects: 
       Post with variables 'serialNo'
@@ -353,6 +358,7 @@ class AjaxHandler{
       Status Code: 400
       Data: serialNo
   */
+  /*
   private function deleteInstrument(){
     // check permissions
     if($_SESSION['role'] != 'manager'){
@@ -376,7 +382,8 @@ class AjaxHandler{
 
     print $response->toJson();
   }
-
+*/
+  /*
   private function getProfileData(){
     if(!isset($_GET['cuid']) || $_GET['cuid'] != $_SESSION['cuid']){
       http_response_code(401);
@@ -408,7 +415,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
   /*
     Expects: 
       GET with optional variables: 'search', 'showUsers', 'showManagers', 'showAdmins', and 'cuid'.
@@ -425,6 +432,7 @@ class AjaxHandler{
       status code: 401
       data: session username 
   */
+      /*
   private function getUsers(){
     if($_SESSION['role'] == 'user'){
       $this->getProfileData();
@@ -506,7 +514,8 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
+  /*
   private function editProfile(){
     if(!isset($_POST['cuid']) || $_POST['cuid'] != $_SESSION['cuid']){
       http_response_code(401);
@@ -528,7 +537,7 @@ class AjaxHandler{
     return;
 
   }
-
+*/
   /*
     Expects: 
       Post with variables shown in function body, pasword and passwordConfirm optional.
@@ -545,6 +554,7 @@ class AjaxHandler{
       Status Code: 400
       Data: all user data from post
   */
+      /*
   private function editUser(){
     if($_SESSION['role'] == 'user'){
       $this->editProfile();
@@ -593,7 +603,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
   /*
     Expects: 
       Post with variables shown in function body.
@@ -610,6 +620,7 @@ class AjaxHandler{
       Status Code: 400
       Data: all user data from post
   */
+      /*
   private function addUser(){
     if($_SESSION['role'] != 'admin'){
       http_response_code(401);
@@ -651,7 +662,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
   /*
     Expects: 
       Post with variable 'cuid'
@@ -668,6 +679,7 @@ class AjaxHandler{
       Status Code: 400
       Data: cuid
   */
+      /*
   private function deleteUser(){
     $cuid = $_POST["cuid"];
 
@@ -704,7 +716,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
   /*
     Expects: 
       GET with variables 'cuid'
@@ -726,38 +738,38 @@ class AjaxHandler{
       $response = new Response(
         'Error',
         'User does not have permission to view other users contracts',
-        ["username" => $_SESSION["username"]]
+        array("username" => $_SESSION["username"])
       );
       print $response->toJson();
       return;
     }
 
-    $contracts = [
-      [
+    $contracts = array(
+      array(
         "start" => "10/10/10",
         "end" => "10/10/11",
         "cuid" => $_SESSION['cuid'],
         "serial_no" => "LP123213",
         "type" => "Guitar",
         "status" => "active"
-      ],
-      [
+      ),
+      array(
         "start" => "12/12/12",
         "end" => "6/6/15",
         "cuid" => $_SESSION['cuid'],
         "serial_no" => "EF12342",
         "type" => "West",
         "status" => "active"
-      ],
-      [
+      ),
+      array(
         "start" => "10/19/10",
         "end" => "11/11/11",
         "cuid" => $_SESSION['cuid'],
         "serial_no" => "LPLPS435",
         "type" => "Cello",
         "status" => "pending"
-      ]
-    ];
+      )
+    );
 
 
     $response = new Response(
@@ -794,14 +806,14 @@ class AjaxHandler{
       $response = new Response(
         'Error',
         'User does not have permission to view contracts',
-        ["username" => $_SESSION["username"]]
+        array("username" => $_SESSION["username"])
       );
       print $response->toJson();
       return;
     }
 
-    $contracts = [
-      [
+    $contracts = array(
+      array(
         "start" => "10/10/10",
         "end" => "10/10/11",
         "cuid" => "1000100",
@@ -809,8 +821,8 @@ class AjaxHandler{
         "serial_no" => "LP123213",
         "type" => "Guitar",
         "status" => "active"
-      ],
-      [
+      ),
+      array(
         "start" => "12/12/12",
         "end" => "6/6/15",
         "cuid" => "2000200",
@@ -818,8 +830,8 @@ class AjaxHandler{
         "serial_no" => "EF12342",
         "type" => "West",
         "status" => "active"
-      ],
-      [
+      ),
+      array(
         "start" => "10/19/10",
         "end" => "11/11/11",
         "cuid" => "1000100",
@@ -827,14 +839,14 @@ class AjaxHandler{
         "serial_no" => "LPLPS435",
         "type" => "Cello",
         "status" => "pending"
-      ]
-    ];
+      )
+    );
 
     if(isset($_GET['showPending'])){
       if(!empty($_GET['showPending'])){
         if($_GET['showPending'] == 'false'){   
-          $contracts = [
-            [
+          $contracts = array(
+            array(
               "start" => "10/10/10",
               "end" => "10/10/11",
               "cuid" => "1000100",
@@ -842,8 +854,8 @@ class AjaxHandler{
               "serial_no" => "LP123213",
               "type" => "Guitar",
               "status" => "active"
-            ],
-            [
+            ),
+            array(
               "start" => "12/12/12",
               "end" => "6/6/15",
               "cuid" => "2000200",
@@ -851,8 +863,8 @@ class AjaxHandler{
               "serial_no" => "EF12342",
               "type" => "West",
               "status" => "active"
-            ]
-          ];
+            )
+          );
         }
       }
     }
@@ -860,8 +872,8 @@ class AjaxHandler{
     if(isset($_GET['showActive'])){
       if(!empty($_GET['showActive'])){
         if($_GET['showActive'] == 'false'){   
-          $contracts = [
-            [
+          $contracts = array(
+            array(
               "start" => "10/19/10",
               "end" => "11/11/11",
               "cuid" => "1000100",
@@ -869,8 +881,8 @@ class AjaxHandler{
               "serial_no" => "LPLPS435",
               "type" => "Cello",
               "status" => "pending"
-            ]
-          ];
+            )
+          );
         }
       }
     }
@@ -878,7 +890,7 @@ class AjaxHandler{
     if(isset($_GET['showActive']) && isset($_GET['showPending'])){
       if(!empty($_GET['showActive']) && !empty($_GET['showPending'])){
         if($_GET['showActive'] == 'false' && $_GET['showPending'] == 'false'){
-          $contracts = [];
+          $contracts = array();
         }
       }
     }
@@ -914,7 +926,7 @@ class AjaxHandler{
       $response = new Response(
         'Error',
         'User does not have permission to create a request.',
-        ["username" => $_SESSION["username"]]
+        array("username" => $_SESSION["username"])
       );
       print $response->toJson();
       return;
@@ -927,7 +939,7 @@ class AjaxHandler{
     $response = new Response(
       'Success',
       'Created request (not implemented)',
-      []
+      array()
     );
     print $response->toJson();
     return;
@@ -955,7 +967,7 @@ class AjaxHandler{
       $response = new Response(
         'Error',
         'User does not have permission to approve a request.',
-        ["username" => $_SESSION["username"]]
+        array("username" => $_SESSION["username"])
       );
       print $response->toJson();
       return;
@@ -964,7 +976,7 @@ class AjaxHandler{
     $response = new Response(
       'Success',
       'Approved request (not implemented)',
-      []
+      array()
     );
     print $response->toJson();
     return;
@@ -994,7 +1006,7 @@ class AjaxHandler{
       $response = new Response(
         'Error',
         'User does not have permission to deny a request.',
-        ["username" => $_SESSION["username"]]
+        array("username" => $_SESSION["username"])
       );
       print $response->toJson();
       return;
@@ -1003,7 +1015,7 @@ class AjaxHandler{
     $response = new Response(
       'Success',
       'Denied request (not implemented)',
-      []
+      array()
     );
     print $response->toJson();
     return;
@@ -1031,7 +1043,7 @@ class AjaxHandler{
       $response = new Response(
         'Error',
         'User does not have permission to end a contract.',
-        ["username" => $_SESSION["username"]]
+        array("username" => $_SESSION["username"])
       );
       print $response->toJson();
       return;
@@ -1040,7 +1052,7 @@ class AjaxHandler{
     $response = new Response(
       'Success',
       'Ended contract (not implemented)',
-      []
+      array()
     );
     print $response->toJson();
     return;
@@ -1061,9 +1073,7 @@ class AjaxHandler{
   private function signIn($username, $password){
     $status = '';
     $msg = '';
-    $data = [
-        'username' => $username
-    ];
+    $data = array('username' => $username);
 
     $isUser = $this->isUser($username, $password);
     
@@ -1104,7 +1114,7 @@ class AjaxHandler{
     $response = new Response(
       'Success',
       'Sign Up function called.',
-      [
+      array(
         'cuid' => $_POST['cuid'],
         'cuEmail' => $_POST['cuEmail'],
         'username' => $_POST['username'],
@@ -1112,7 +1122,7 @@ class AjaxHandler{
         'lastName' => $_POST['lastName'],
         'password' => $_POST['password'],
         'passwordConfirm' => $_POST['passwordConfirm']
-      ]
+      )
     );
 
     print $response->toJson();
@@ -1154,7 +1164,7 @@ class AjaxHandler{
       case "get_session":
         $this->getSession();
         break;
-
+/*
       case "get_instruments":
         $this->getInstruments();
         break;
@@ -1194,7 +1204,7 @@ class AjaxHandler{
       case "delete_user":
         $this->deleteUser();
         break;
-
+*/
       case "get_contracts":
         $this->getContracts();
         break;
