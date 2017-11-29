@@ -446,6 +446,10 @@ class AjaxHandler{
     if(isset($_GET['show_users']) && $_GET['show_users'] == 'false'){
       $sql = $sql." AND role <> 'user'";
     }
+    if(isset($_GET['cuid'])){
+      $cuid = mysqli_real_escape_string($this->conn, $_GET['cuid']);
+      $sql = $sql." AND cuid ='".$cuid."'";
+    }
 
     $result = $this->conn->query($sql);
     if(!$result){
@@ -472,6 +476,23 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  /*
+    Expects: 
+      Post with variables 'cuid', 'email', 'username', 'password', 
+      'password_confirm', and 'role'
+    Permissions:
+      Admin: Only admins may perform this action.
+    Success:
+      Condition: Insert row into users table using given data - no errors
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error/ duplicate keys / bad passwords / invalid role):
+      Status Code: 400
+      Data: error message
+  */
   private function addUser(){
     $cuid = mysqli_real_escape_string($this->conn, $_POST['cuid']);
     $email = mysqli_real_escape_string($this->conn, $_POST['email']);
@@ -549,6 +570,7 @@ class AjaxHandler{
     }
     $sql = "INSERT INTO users (".$colstr.") VALUES (".$valstr.")";
 
+    // execute and send success/error message
     $result = $this->conn->query($sql);
     if(!$result){
       http_response_code(400);
@@ -562,6 +584,119 @@ class AjaxHandler{
       $response = new Response(
         'Success',
         'Successfully added user.'
+      );
+      print $response->toJson();
+    } 
+  }
+
+  /*
+    Expects: 
+      Post with variables 'cuid', at least one other variable from 
+      'email', 'username', 'first_name', 'last_name', 'password', 'role'.
+    Permissions:
+      Admin: Admins may perform this action on any user, and update roles and
+        passwords.
+      User: Users may perform this action on themselves, but cannot change their
+        role or password.
+    Success:
+      Condition: Update row in users table using given data - no errors
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error/ duplicate keys / bad passwords / invalid role):
+      Status Code: 400
+      Data: error message
+  */
+  private function editUser(){
+    $cuid = mysqli_real_escape_string($this->conn, $_POST['cuid']);
+
+    $colVal = [];
+
+    // add fields to update if present
+    if(isset($_POST['email']) && !empty($_POST['email'])){
+      $email = mysqli_real_escape_string($this->conn, $_POST['email']);
+      $colVal['email'] = $email;
+    }
+    if(isset($_POST['username']) && !empty($_POST['username'])){
+      $username = mysqli_real_escape_string($this->conn, $_POST['username']);
+      $colVal['username'] = $username;
+    }
+    if(isset($_POST['first_name']) && !empty($_POST['first_name'])){
+      $first_name = mysqli_real_escape_string($this->conn, $_POST['first_name']);
+      $colVal['first_name'] = $first_name;
+    }
+    if(isset($_POST['last_name']) && !empty($_POST['last_name'])){
+      $last_name = mysqli_real_escape_string($this->conn, $_POST['last_name']);
+      $colVal['last_name'] = $last_name;
+    }
+    // these fields are restricted to admins
+    if($_SESSION['role'] == 'admin'){
+      if(isset($_POST['password']) && !empty($_POST['password'])){
+        if(isset($_POST['password_confirm']) && $_POST['password'] == $_POST['password_confirm']){
+          $password = mysqli_real_escape_string($this->conn, $_POST['password']);
+          $colVal['password'] = $password;
+        } else {
+          $response = new Response(
+            'Error',
+            'Provided passwords do not match.'
+          );
+          print $response->toJson();
+          return;
+        }
+      }
+      if(isset($_POST['role']) && !empty($_POST['role'])){
+        $role = mysqli_real_escape_string($this->conn, $_POST['role']);
+        if($role != 'user' && $role != 'manager' && $role != 'admin'){
+          http_response_code(400);
+          $response = new Response(
+            'Error',
+            "'".$role."' is not a valid role."
+          );
+          print $reponse->toJson();
+          return;
+        }
+        $colVal['role'] = $role;
+      }
+    }
+
+    if(count($colVal) < 1){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'No data provided to update user.'
+      );
+      print $response->toJson();
+      return;
+    }
+
+    // build sql
+    $setstr = '';
+    $first = true;
+    foreach($colVal as $col => $val){
+      if($first){
+        $first = false;
+        $setstr = $setstr.$col."='".$val."'";
+      } else {
+        $setstr = $setstr.", ".$col."='".$val."'";
+      }
+    }
+    $sql = "UPDATE users SET ".$setstr." WHERE cuid=".$cuid;
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+    } else {
+      $response = new Response(
+        'Success',
+        'Successfully updated user.'
       );
       print $response->toJson();
     } 
@@ -811,6 +946,16 @@ class AjaxHandler{
           $this->addUser();
         } else {
           $this->unauthorized('Only admins can add users.');
+        }
+        break;
+
+      case "edit_user":
+        requirePost('cuid');
+
+        if(isset($_SESSION['role']) && (($_SESSION['role'] == 'user' && $_SESSION['cuid'] == $_POST['cuid']) || ($_SESSION['role'] == 'admin'))){
+          $this->editUser();
+        } else {
+          $this->unauthorized('You do not have permission to edit this user.');
         }
         break;
 

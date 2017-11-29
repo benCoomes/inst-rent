@@ -11,26 +11,26 @@ angular.module('instRent.editUser', ['ngRoute'])
   $scope.loadForm = function(){
     $scope.editUserForm = {
       'cuid' : '',
-      'cuEmail' : '',
+      'email' : '',
       'username' : '',
-      'firstName' : '',
-      'lastName' : '',
+      'first_name' : '',
+      'last_name' : '',
       'password' : '',
-      'passwordConfirm' : '',
+      'password_confirm' : '',
       'role' : '',   
     }
 
     if($scope.params.cuid){
-      $http.get('php/ajax_handlers_cst.php?action=get_users&cuid=' + $scope.params.cuid)
+      $http.get('php/ajax_handlers.php?action=get_users&cuid=' + $scope.params.cuid)
       .then(function onSuccess(result){
         let user = result.data.data[0];
         console.log(result);
         if(user){      
           $scope.editUserForm.cuid = parseInt(user.cuid);
-          $scope.editUserForm.cuEmail = user.email;
+          $scope.editUserForm.email = user.email;
           $scope.editUserForm.username = user.username;
-          $scope.editUserForm.firstName = user.firstName;
-          $scope.editUserForm.lastName = user.lastName;
+          $scope.editUserForm.first_name = user.first_name;
+          $scope.editUserForm.last_name = user.last_name;
           $scope.editUserForm.role = user.role;
           $scope.disableCuid = true;
           $scope.validate();
@@ -54,13 +54,13 @@ angular.module('instRent.editUser', ['ngRoute'])
     // may be due to html5 validation for type='email'
     if($scope.editUserForm &&
         $scope.editUserForm.cuid && 
-        $scope.editUserForm.cuEmail && 
+        $scope.editUserForm.email && 
         $scope.editUserForm.username &&
-        $scope.editUserForm.firstName &&
-        $scope.editUserForm.lastName &&
+        $scope.editUserForm.first_name &&
+        $scope.editUserForm.last_name &&
         $scope.editUserForm.role &&
         typeof($scope.editUserForm.cuid) == 'number' &&
-        $scope.editUserForm.password == $scope.editUserForm.passwordConfirm){
+        $scope.editUserForm.password == $scope.editUserForm.password_confirm){
       $scope.valid = true;
     } else {
       $scope.valid = false;
@@ -70,7 +70,7 @@ angular.module('instRent.editUser', ['ngRoute'])
   $scope.submitForm = function(){
     if($rootScope.session.role == 'admin'){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=edit_user',
+        url: 'php/ajax_handlers.php?action=edit_user',
         method: 'POST',
         data: $httpParamSerializerJQLike($scope.editUserForm),
         headers: {
