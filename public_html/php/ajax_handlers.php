@@ -410,6 +410,62 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  private function getUsers(){
+    $sql = "SELECT cuid, username, first_name, last_name, role, email FROM users WHERE 1=1";
+
+    if(isset($_GET['search'])){
+      $search = mysqli_real_escape_string($this->conn, $_GET['search']);
+      $sql = $sql." AND (cuid LIKE '%".$search."%' 
+        OR username LIKE '%".$search."%' 
+        OR first_name LIKE '%".$search."%' 
+        OR last_name LIKE '%".$search."%' 
+        OR email LIKE '%".$search."%')";
+    }
+    if(isset($_GET['show_admins']) && $_GET['show_admins'] == 'false'){
+      $sql = $sql." AND role <> 'admin'";
+    }
+    if(isset($_GET['show_managers']) && $_GET['show_managers'] == 'false'){
+      $sql = $sql." AND role <> 'manager'";
+    }
+    if(isset($_GET['show_users']) && $_GET['show_users'] == 'false'){
+      $sql = $sql." AND role <> 'user'";
+    }
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $users = [];
+    while($row = $result->fetch_assoc()){
+      $users[] = $row;
+    }
+
+    $response = new Response(
+      'Success',
+      'Got users',
+      $users
+    );
+    print $response->toJson();
+  }
+
+  private function getProfileData(){
+    //stubbed
+    $response = new Response(
+      'Success',
+      'Get profile data called.'
+    );
+    print $resonse->toJson();
+    return;
+  }
+
   /*
     Expects: 
       Post with variables 'username' and 'password'
@@ -582,6 +638,16 @@ class AjaxHandler{
           $this->getInstrumentConditions();
         } else {
           $this->unauthorized('Must be signed in to access instrument conditions');
+        }
+        break;
+
+      case "get_users":
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'user'){
+          $this->getProfileData();
+        } else if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin') {
+          $this->getUsers();
+        } else {
+          $this->unauthorized("Only admins can view all users. Users may view themselves.");
         }
         break;
 

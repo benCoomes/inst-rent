@@ -19,13 +19,13 @@
               <div class="col-md-10">
                 <div class="form-check form-check-inline">
                   <label class="form-check-label">
-                    <input ng-model="filterForm.showUsers" ng-change="getUsers()" class="form-check-input" type="checkbox">&nbsp;user&nbsp;
+                    <input ng-model="filterForm.show_users" ng-change="getUsers()" class="form-check-input" type="checkbox">&nbsp;user&nbsp;
                   </label>
                   <label class="form-check-label">
-                    <input ng-model="filterForm.showManagers" ng-change="getUsers()" class="form-check-input" type="checkbox">&nbsp;manager&nbsp;
+                    <input ng-model="filterForm.show_managers" ng-change="getUsers()" class="form-check-input" type="checkbox">&nbsp;manager&nbsp;
                   </label>
                   <label class="form-check-label">
-                    <input ng-model="filterForm.showAdmins" ng-change="getUsers()" class="form-check-input" type="checkbox">&nbsp;admin&nbsp;
+                    <input ng-model="filterForm.show_admins" ng-change="getUsers()" class="form-check-input" type="checkbox">&nbsp;admin&nbsp;
                   </label>
                 </div>
               </div>
@@ -53,8 +53,8 @@
         <tr ng-repeat='user in users'>
           <td>{{user.cuid}}</td>
           <td>{{user.username}}</td>
-          <td>{{user.firstName}}</td>
-          <td>{{user.lastName}}</td>
+          <td>{{user.first_name}}</td>
+          <td>{{user.last_name}}</td>
           <td>{{user.role}}</td>
           <td>{{user.email}}</td>
           <td>

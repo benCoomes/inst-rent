@@ -14,17 +14,17 @@ angular.module('instRent.manageUsers', ['ngRoute'])
     if($scope.filterForm.search){
       qsparams = qsparams + '&search=' + $scope.filterForm.search;
     }
-    if($scope.filterForm.hasOwnProperty('showUsers') && $scope.filterForm.showUsers == false){
-      qsparams = qsparams + '&showUsers=false';
+    if($scope.filterForm.hasOwnProperty('show_users') && $scope.filterForm.show_users == false){
+      qsparams = qsparams + '&show_users=false';
     }
-    if($scope.filterForm.hasOwnProperty('showManagers') && $scope.filterForm.showManagers == false){
-      qsparams = qsparams + '&showManagers=false';
+    if($scope.filterForm.hasOwnProperty('show_managers') && $scope.filterForm.show_managers == false){
+      qsparams = qsparams + '&show_managers=false';
     }
-    if($scope.filterForm.hasOwnProperty('showAdmins') && $scope.filterForm.showAdmins == false){
-      qsparams = qsparams + '&showAdmins=false';
+    if($scope.filterForm.hasOwnProperty('show_admins') && $scope.filterForm.show_admins == false){
+      qsparams = qsparams + '&show_admins=false';
     }
     console.log('qsparams: ' + qsparams);
-    $http.get('php/ajax_handlers_cst.php?' + qsparams)
+    $http.get('php/ajax_handlers.php?' + qsparams)
     .then(function onSuccess(result){
       $scope.users = result.data.data;
     }, function onError(result){
@@ -35,7 +35,6 @@ angular.module('instRent.manageUsers', ['ngRoute'])
   }
 
   $scope.editUser = function(cuid){
-    //todo
     $location.url('editUser?cuid=' + cuid)
   }
 
@@ -69,9 +68,9 @@ angular.module('instRent.manageUsers', ['ngRoute'])
   $scope.resetForm = function(){
     $scope.filterForm = {
       'search' : '',
-      'showUsers' : true,
-      'showManagers': true,
-      'showAdmins' : true
+      'show_users' : true,
+      'show_managers': true,
+      'show_admins' : true
     };
 
     $scope.getUsers();
