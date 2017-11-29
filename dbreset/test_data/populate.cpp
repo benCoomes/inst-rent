@@ -31,7 +31,10 @@ int main() {
 			fName << "|" << lName << "|" << 
 			fName + lName + "@g.clemson.edu" << "|" << 
 			rand()%9000 + 1000 << " " << address[rand()%5] << 
-			", " << city[rand()%6] << ", "<< state[rand()%6]  << endl;
+			", " << city[rand()%6] << ", "<< state[rand()%6] << 
+			"|" << (rand()%32) + 18 << "|" << 
+			(rand()%899) + 100 << "-" << (rand()%899) + 100 << 
+			"-" << (rand()%8999) + 1000 << endl;
 		instruments << serialNo++ <<  "," << inst << "," << cond << 
 				endl; 
 	}

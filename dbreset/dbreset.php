@@ -33,8 +33,10 @@ if($conn->connect_error){
       role enum('student','manager','admin') NOT NULL,
 		first_name varchar(20) NOT NULL,
 		last_name varchar(20) NOT NULL,
-		email varchar(20) UNIQUE NOT NULL,
-		address varchar(200) NOT NULL)";
+		email varchar(200) UNIQUE NOT NULL,
+		address varchar(200) NOT NULL,
+		age int NOT NULL,
+		phone_number varchar(12) NOT NULL)";
 	$query2 = "CREATE TABLE instruments(
 		serial_no varchar(20) PRIMARY KEY NOT NULL,
 		type varchar(20) NOT NULL,
