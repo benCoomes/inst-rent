@@ -10,18 +10,18 @@ angular.module('instRent.addInstrument', ['ngRoute'])
 .controller('AddInstrumentCtrl', function AddInstrumentCtrl($scope, $rootScope, $http, $httpParamSerializerJQLike){
   $scope.resetForm = function(){
     $scope.addInstForm = {
-      'serialNo' : '',
+      'serial_no' : '',
       'type' : '',
-      'condition' : ''     
+      'cond' : ''     
     }
     $scope.validate();
   }
 
   $scope.validate = function(){
     if($scope.addInstForm && 
-        $scope.addInstForm.serialNo && 
+        $scope.addInstForm.serial_no && 
         $scope.addInstForm.type && 
-        $scope.addInstForm.condition){
+        $scope.addInstForm.cond){
       $scope.valid = true;
     } else {
       $scope.valid = false;
@@ -31,9 +31,9 @@ angular.module('instRent.addInstrument', ['ngRoute'])
   $scope.submitForm = function(){
     if($rootScope.session.role = 'manager'){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=add_instrument',
+        url: 'php/ajax_handlers.php?action=add_instrument',
         method: 'POST',
-        data: $httpParamSerializerJQLike($scope.signInForm),
+        data: $httpParamSerializerJQLike($scope.addInstForm),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }

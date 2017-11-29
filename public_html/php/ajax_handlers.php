@@ -210,6 +210,50 @@ class AjaxHandler{
 
   /*
     Expects: 
+      Post with variables 'serial_no', 'type' and 'cond'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Insert row into instruments table using given data - no errors
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username
+    Failure (integrity error/ duplicate keys):
+      Status Code: 400
+      Data: error message
+  */
+  private function addInstrument(){
+    $serial_no = mysqli_real_escape_string($this->conn, $_POST['serial_no']);
+    $type = mysqli_real_escape_string($this->conn, $_POST['type']);
+    $type = strtolower($type);
+    $cond = mysqli_real_escape_string($this->conn, $_POST['cond']);
+    $cond = strtolower($cond);
+
+    $sql = "INSERT INTO instruments (serial_no, type, cond) 
+      VALUES ('".$serial_no."', '".$type."', '".$cond."')";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+    } else {
+      $response = new Response(
+        'Success',
+        'Successfully added instrument.'
+      );
+      print $response->toJson();
+    }
+  }
+
+  /*
+    Expects: 
       Post with variables 'serial_no' and 'cond'
     Permissions:
       Manager: Only managers may perform this action.
@@ -489,6 +533,18 @@ class AjaxHandler{
           $this->getInstruments();
         } else {
           $this->unauthorized('Must be signed in to access instruments.');
+        }
+        break;
+
+      case "add_instrument":
+        requirePost('serial_no');
+        requirePost('cond');
+        requirePost('type');
+
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'manager'){
+          $this->addInstrument();
+        } else {
+          $this->unauthorized("Only managers can add instruments.");
         }
         break;
 
