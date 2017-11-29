@@ -41,7 +41,7 @@ angular.module('instRent.manageUsers', ['ngRoute'])
   $scope.deleteUser = function(cuid){
     if($rootScope.session.role == 'admin'  && $rootScope.session.cuid != cuid){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=delete_user',
+        url: 'php/ajax_handlers.php?action=delete_user',
         method: 'POST',
         data: $httpParamSerializerJQLike({'cuid' : cuid}),
         headers: {

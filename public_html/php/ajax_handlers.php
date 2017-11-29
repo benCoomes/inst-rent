@@ -410,6 +410,22 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  /*
+    Expects: 
+      GET with optional variables: 'search', 'show_users', 'show_managers', 'show_admins', and 'cuid'.
+    Permissions:
+      Admins: only admins may view this information.
+    Success:
+      Condition: query completed, even if empty
+      Status Code: 200
+      Data: Users returned by query, without password data. Select by 'search', role if specified.
+        If 'show_<role>' is not in QS, get users with role = <role>
+        If 'show_<role>' is in QS, check its value (false or true). Do not get users with role = <role> if false.
+        If 'cuid' is in QS, select by exact cuid.
+    Failure (permissions):
+      status code: 401
+      data: session username and role
+  */
   private function getUsers(){
     $sql = "SELECT cuid, username, first_name, last_name, role, email FROM users WHERE 1=1";
 
@@ -454,6 +470,44 @@ class AjaxHandler{
       $users
     );
     print $response->toJson();
+  }
+
+  /*
+    Expects: 
+      Post with variable 'cuid'
+    Permissions:
+      Admin: Only admins may perform this action.
+    Success:
+      Condition: Delete row from users table using given cuid - no errors
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error / referential integrity):
+      Status Code: 400
+      Data: error message
+  */
+  private function deleteUser(){
+    $cuid = mysqli_real_escape_string($this->conn, $_POST['cuid']);
+    $sql = "DELETE FROM users WHERE cuid='".$cuid."'";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+    } else {
+      $response = new Response(
+        'Success',
+        'Successfully deleted user.'
+      );
+      print $response->toJson();
+    } 
   }
 
   private function getProfileData(){
@@ -648,6 +702,16 @@ class AjaxHandler{
           $this->getUsers();
         } else {
           $this->unauthorized("Only admins can view all users. Users may view themselves.");
+        }
+        break;
+
+      case "delete_user":
+        requirePost("cuid");
+
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){
+          $this->deleteUser();
+        } else {
+          $this->unauthorized("Only admins can delete users.");
         }
         break;
 
