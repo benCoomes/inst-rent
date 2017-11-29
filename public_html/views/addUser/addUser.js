@@ -11,31 +11,30 @@ angular.module('instRent.addUser', ['ngRoute'])
   $scope.resetForm = function(){
     $scope.addUserForm = {
       'cuid' : '',
-      'cuEmail' : '',
+      'email' : '',
       'username' : '',
-      'firstName' : '',
-      'lastName' : '',
+      'first_name' : '',
+      'last_name' : '',
       'password' : '',
-      'passwordConfirm' : '',
+      'password_confirm' : '',
       'role' : '',   
     }
     $scope.validate();
   }
 
   $scope.validate = function(){
+    console.log($scope.addUserForm);
     // for some reason, email must be in valid form, even though there are not check for it... spooky. 
     // may be due to html5 validation for type='email'
     if($scope.addUserForm &&
         $scope.addUserForm.cuid && 
-        $scope.addUserForm.cuEmail && 
+        $scope.addUserForm.email && 
         $scope.addUserForm.username &&
-        $scope.addUserForm.firstName &&
-        $scope.addUserForm.lastName &&
         $scope.addUserForm.password &&
-        $scope.addUserForm.passwordConfirm &&
+        $scope.addUserForm.password_confirm &&
         $scope.addUserForm.role &&
         typeof($scope.addUserForm.cuid) == 'number' &&
-        $scope.addUserForm.password == $scope.addUserForm.passwordConfirm){
+        $scope.addUserForm.password == $scope.addUserForm.password_confirm){
       $scope.valid = true;
     } else {
       $scope.valid = false;
@@ -45,7 +44,7 @@ angular.module('instRent.addUser', ['ngRoute'])
   $scope.submitForm = function(){
     if($rootScope.session.role == 'admin'){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=add_user',
+        url: 'php/ajax_handlers.php?action=add_user',
         method: 'POST',
         data: $httpParamSerializerJQLike($scope.addUserForm),
         headers: {

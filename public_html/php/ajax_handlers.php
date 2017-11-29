@@ -472,6 +472,101 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  private function addUser(){
+    $cuid = mysqli_real_escape_string($this->conn, $_POST['cuid']);
+    $email = mysqli_real_escape_string($this->conn, $_POST['email']);
+    $username = mysqli_real_escape_string($this->conn, $_POST['username']);
+    $password = mysqli_real_escape_string($this->conn, $_POST['password']);
+    $password_confirm = mysqli_real_escape_string($this->conn, $_POST['password_confirm']);
+    $role = mysqli_real_escape_string($this->conn, $_POST['role']);
+
+    // validate passwords
+    if($password != $password_confirm){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Passwords do not match.'
+      );
+      print $response->toJson();
+      return;
+    }
+
+    // validate role
+    if($role != "admin" && $role != "user" && $role != "manager"){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        "'".$role."' is not a valid role."
+      );
+      print $response->toJson();
+      return;
+    }
+
+    // create column -> value mapping array
+    $colVal = [
+      "cuid" => $cuid,
+      "email" => $email,
+      "username" => $username,
+      "password" => $password,
+      "role" => $role
+    ];
+
+    // add other fields if present
+    if(isset($_POST['first_name']) && !empty($_POST['first_name'])){
+      $first_name = mysqli_real_escape_string($this->conn, $_POST['first_name']);
+      $colVal['first_name'] = $first_name;
+    }
+    if(isset($_POST['last_name']) && !empty($_POST['last_name'])){
+      $last_name = mysqli_real_escape_string($this->conn, $_POST['last_name']);
+      $colVal['last_name'] = $last_name;
+    }
+    if(isset($_POST['age']) && !empty($_POST['age'])){
+      $age = mysqli_real_escape_string($this->conn, $_POST['age']);
+      $colVal['age'] = $age;
+    }
+    if(isset($_POST['phone']) && !empty($_POST['phone'])){
+      $phone = mysqli_real_escape_string($this->conn, $_POST['phone']);
+      $colVal['phone'] = $phone;
+    }
+    if(isset($_POST['address']) && !empty($_POST['address'])){
+      $address = mysqli_real_escape_string($this->conn, $_POST['address']);
+      $colVal['address'] = $address;
+    }
+
+    // build sql
+    $colstr = '';
+    $valstr = '';
+    $first = true;
+    foreach($colVal as $col => $val){
+      if($first){
+        $first = false;
+        $colstr = $colstr.$col;
+        $valstr = $valstr."'".$val."'";
+      } else {
+        $colstr = $colstr.", ".$col;
+        $valstr = $valstr.", '".$val."'";
+      }
+    }
+    $sql = "INSERT INTO users (".$colstr.") VALUES (".$valstr.")";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+    } else {
+      $response = new Response(
+        'Success',
+        'Successfully added user.'
+      );
+      print $response->toJson();
+    } 
+  }
+
   /*
     Expects: 
       Post with variable 'cuid'
@@ -705,10 +800,26 @@ class AjaxHandler{
         }
         break;
 
+      case "add_user":
+        requirePost('cuid');
+        requirePost('username');
+        requirePost('password');
+        requirePost('password_confirm');
+        requirePost('role');
+
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){
+          $this->addUser();
+        } else {
+          $this->unauthorized('Only admins can add users.');
+        }
+        break;
+
       case "delete_user":
         requirePost("cuid");
 
-        if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){
+        if($_SESSION['cuid'] == $_POST['cuid']){
+          $this->unauthorized("You cannot delete yourself.");
+        } else if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){
           $this->deleteUser();
         } else {
           $this->unauthorized("Only admins can delete users.");
@@ -716,7 +827,9 @@ class AjaxHandler{
         break;
 
       case "sign_in":
-        // TODO: check for PVs here
+        requirePost('username');
+        requirePost('password');
+
         $this->signIn($_POST['username'], $_POST['password']);
         break;
 
