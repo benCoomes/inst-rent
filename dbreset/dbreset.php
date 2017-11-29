@@ -34,9 +34,9 @@ if($conn->connect_error){
 		first_name varchar(20) NOT NULL,
 		last_name varchar(20) NOT NULL,
 		email varchar(200) UNIQUE NOT NULL,
-		address varchar(200) NOT NULL,
-		age int NOT NULL,
-		phone_number varchar(12) NOT NULL)";
+		address varchar(200),
+		age int,
+		phone_number varchar(12))";
 	$query2 = "CREATE TABLE instruments(
 		serial_no varchar(20) PRIMARY KEY NOT NULL,
 		type varchar(20) NOT NULL,
