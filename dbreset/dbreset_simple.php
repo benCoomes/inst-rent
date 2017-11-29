@@ -30,7 +30,7 @@ if($conn->connect_error){
 		cuid int PRIMARY KEY NOT NULL, 
 		username varchar(20) UNIQUE NOT NULL,
 		password varchar(20) NOT NULL,
-      role enum('student','manager','admin') NOT NULL,
+      role enum('user','manager','admin') NOT NULL,
 		first_name varchar(20) NOT NULL,
 		last_name varchar(20) NOT NULL,
 		email varchar(20) UNIQUE NOT NULL)";
@@ -61,16 +61,16 @@ if($conn->connect_error){
 
 // populate new tables with test data set
 	$query1 = "INSERT INTO users (cuid,username,password,role,email,first_name,last_name) VALUES
-		(1000000,'jhopkins','password1','student','jhopkins@g.clemson.edu','John','Hopkins'),
-		(2000000,'sfields','password2','student','sfields@g.clemson.edu','Susan','Fields'),
-		(3000000,'cjwest','password3','student','cjwest@g.clemson.edu','Chris','West'),
-		(4000000,'bcoomes','password4','student','bcoomes@g.clemson.edu','Ben','Coomes'),
+		(1000000,'jhopkins','password1','user','jhopkins@g.clemson.edu','John','Hopkins'),
+		(2000000,'sfields','password2','user','sfields@g.clemson.edu','Susan','Fields'),
+		(3000000,'cjwest','password3','user','cjwest@g.clemson.edu','Chris','West'),
+		(4000000,'bcoomes','password4','user','bcoomes@g.clemson.edu','Ben','Coomes'),
 		(5000000,'wbuffet','notunique','manager','wbuffet@g.clemson.edu','Warren','Buffet'),
 		(6000000,'dvadar','notunique','manager','dvadar@g.clemson.edu','Darth','Vadar'),
 		(7000000,'smario','password5','admin','smario@g.clemson.edu','Super','Mario'),
-		(8000000,'tmorris','password6','student','tmorris@g.clemson.edu','Tony','Morris'),
-		(9000000,'sadams','password7','student','sadams@g.clemson.edu','Sam','Adams'),
-		(9999999,'sfalls','password8','student','sfalls@g.clemson.edu','Sarah','McFalls')";
+		(8000000,'tmorris','password6','user','tmorris@g.clemson.edu','Tony','Morris'),
+		(9000000,'sadams','password7','user','sadams@g.clemson.edu','Sam','Adams'),
+		(9999999,'sfalls','password8','user','sfalls@g.clemson.edu','Sarah','McFalls')";
 	//$query1 = "LOAD DATA INFILE 'filename' INTO TABLE tblname FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES; "  
 	$query2 = "INSERT INTO instruments (serial_no,type,cond) VALUES
 		('SN0001','trumpet','good'),
