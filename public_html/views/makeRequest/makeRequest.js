@@ -13,8 +13,8 @@ angular.module('instRent.makeRequest', ['ngRoute'])
       "serial_no" : $scope.params.serial_no,
       "cond" : $scope.params.cond,
       "type" : $scope.params.type,
-      "start" : null,
-      "end" : null
+      "start_date" : null,
+      "end_date" : null
     }
     $scope.validate();
   }
@@ -22,9 +22,8 @@ angular.module('instRent.makeRequest', ['ngRoute'])
   $scope.validate = function(){
     console.log($scope.instReqForm)
     if($scope.instReqForm.serial_no &&
-      $scope.instReqForm.start &&
-      $scope.instReqForm.end &&
-      $scope.instReqForm.start < $scope.instReqForm.end){
+      $scope.instReqForm.start_date &&
+      $scope.instReqForm.end_date){
       $scope.valid = true;
     } else {
       $scope.valid = false;
@@ -34,13 +33,13 @@ angular.module('instRent.makeRequest', ['ngRoute'])
   $scope.submitForm = function(){
     if($rootScope.session.role == 'user'){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=make_request',
+        url: 'php/ajax_handlers.php?action=make_request',
         method: 'POST',
         data: $httpParamSerializerJQLike({
           "cuid" : $rootScope.session.cuid,
           "serial_no" : $scope.instReqForm.serial_no,
-          "start" : $scope.instReqForm.start,
-          "end" : $scope.instReqForm.end
+          "start_date" : $scope.instReqForm.start_date,
+          "end_date" : $scope.instReqForm.end_date
         }),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'

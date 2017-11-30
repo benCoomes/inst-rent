@@ -27,7 +27,7 @@ angular.module('instRent.userHome', ['ngRoute'])
   $scope.deletePendingContract = function(serial_no){
     console.log('deleting request: ' + serial_no);
     $http({
-      url: 'php/ajax_handlers_cst.php?action=deny_request',
+      url: 'php/ajax_handlers.php?action=deny_request',
       method: 'POST',
       data: $httpParamSerializerJQLike({'cuid' : $rootScope.session.cuid, 'serial_no' : serial_no}),
       headers: {

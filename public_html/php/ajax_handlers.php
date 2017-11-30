@@ -841,8 +841,63 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+  /*
+    Expects: 
+      POST with variables 'cuid', 'serial_no', 'start_date', and 'end_date'
+    Permissions:
+      User: User may perform this action for themselves (post cuid matches session cuid)
+    Success:
+      Condition: Insert row into pending contracts table.
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integity error / duplicate keys)
+      Status Code: 400
+      Data: error message
+  */
+  private function makeRequest(){
+    $cuid = mysqli_real_escape_string($this->conn, $_POST['cuid']);
+    $serial_no = mysqli_real_escape_string($this->conn, $_POST['serial_no']);
+    $start_date = mysqli_real_escape_string($this->conn, $_POST['start_date']);
+    $end_date = mysqli_real_escape_string($this->conn, $_POST['end_date']);
 
-    /*
+    $end_comp = strtotime($end_date);
+    $start_comp = strtotime($start_date);
+    if(!$end_comp || !$start_comp || $end_comp <= $start_comp){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Invalid dates',
+        array('end' => $end_comp, 'start' => $start_comp)
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $sql = "INSERT INTO pending_contracts (cuid, serial_no, start_date, end_date)
+      VALUES ('".$cuid."', '".$serial_no."', '".$start_date."', '".$end_date."')";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+    } else {
+      $response = new Response(
+        'Success',
+        'Successfully made request.'
+      );
+      print $response->toJson();
+    } 
+  }
+
+  /*
     Expects: 
       Post with variables 'cuid', 'serial_no', 'start_date', and 'end_date'
     Permissions:
@@ -933,7 +988,8 @@ class AjaxHandler{
     Expects: 
       Post with variables 'cuid' and 'serial_no'
     Permissions:
-      Manager: Only managers may perform this action.
+      Manager: Managers may perform this action.
+      User: Users may perform this action on thier own requests.
     Success:
       Condition: Delete row from pending_contracts table using given cuid - no errors
       Status Code: 200
@@ -1237,6 +1293,19 @@ class AjaxHandler{
         }
         break;
 
+      case "make_request":
+        requirePost('cuid');
+        requirePost('serial_no');
+        requirePost('start_date');
+        requirePost('end_date');
+
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'user' && isset($_SESSION['cuid']) && $_SESSION['cuid'] == $_POST['cuid']){
+          $this->makeRequest();
+        } else {
+          $this->unauthorized('You do not have permission to make this request.');
+        }
+        break;
+
       case "approve_request":
         requirePost('cuid');
         requirePost('serial_no');
@@ -1252,7 +1321,9 @@ class AjaxHandler{
         requirePost('cuid');
         requirePost('serial_no');
 
-        if(isset($_SESSION['role']) && $_SESSION['role'] == 'manager'){
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'user' && isset($_SESSION['cuid']) && $_SESSION['cuid'] == $_POST['cuid']){
+          $this->denyRequest();
+        } else if(isset($_SESSION['role']) && $_SESSION['role'] == 'manager'){
           $this->denyRequest();
         } else {
           $this->unauthorized('Only managers can deny requests.');
