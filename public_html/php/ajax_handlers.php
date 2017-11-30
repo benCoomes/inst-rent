@@ -31,11 +31,11 @@ class Response{
   }
 
   public function toJson(){
-    $struct = [
+    $struct = array(
       "msg" => $this->msg,
       "status" => $this->status,
       "data" => $this->data
-    ];
+    );
 
     return json_encode($struct);
   }
@@ -185,7 +185,7 @@ class AjaxHandler{
       return;
     }
 
-    $instruments = [];
+    $instruments = array();
     while($row = $result->fetch_assoc()){
       if($row['available'] == 0){
         $row['available'] = False;
@@ -357,7 +357,7 @@ class AjaxHandler{
       return;
     } 
 
-    $types = [];
+    $types = array();
     while($row = $result->fetch_assoc()){
       $types[] = $row['type'];
     }
@@ -397,7 +397,7 @@ class AjaxHandler{
       return;
     } 
 
-    $conds = [];
+    $conds = array();
     while($row = $result->fetch_assoc()){
       $conds[] = $row['cond'];
     }
@@ -463,7 +463,7 @@ class AjaxHandler{
       return;
     }
 
-    $users = [];
+    $users = array();
     while($row = $result->fetch_assoc()){
       $users[] = $row;
     }
@@ -524,13 +524,13 @@ class AjaxHandler{
     }
 
     // create column -> value mapping array
-    $colVal = [
+    $colVal = array(
       "cuid" => $cuid,
       "email" => $email,
       "username" => $username,
       "password" => $password,
       "role" => $role
-    ];
+    );
 
     // add other fields if present
     if(isset($_POST['first_name']) && !empty($_POST['first_name'])){
@@ -612,7 +612,7 @@ class AjaxHandler{
   private function editUser(){
     $cuid = mysqli_real_escape_string($this->conn, $_POST['cuid']);
 
-    $colVal = [];
+    $colVal = array();
 
     // add fields to update if present
     if(isset($_POST['email']) && !empty($_POST['email'])){
@@ -806,7 +806,7 @@ class AjaxHandler{
     $response = new Response(
       'Success',
       'Sign Up function called.',
-      [
+      array(
         'cuid' => $_POST['cuid'],
         'cuEmail' => $_POST['cuEmail'],
         'username' => $_POST['username'],
@@ -814,7 +814,7 @@ class AjaxHandler{
         'lastName' => $_POST['lastName'],
         'password' => $_POST['password'],
         'passwordConfirm' => $_POST['passwordConfirm']
-      ]
+      )
     );
 
     print $response->toJson();
@@ -842,7 +842,7 @@ class AjaxHandler{
       $response = new Response(
         'Error',
         $msg,
-        ["username" => $_SESSION["username"], "role" => $_SESSION['role']]
+        array("username" => $_SESSION["username"], "role" => $_SESSION['role'])
       );
       print $response->toJson();
       return;
