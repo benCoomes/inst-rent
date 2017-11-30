@@ -841,6 +841,94 @@ class AjaxHandler{
     print $response->toJson();
   }
 
+
+    /*
+    Expects: 
+      Post with variables 'cuid', 'serial_no', 'start_date', and 'end_date'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: insert row into the active_contracts table and then delete it from pending_contracts table if insertion does not fail 
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error / referential integrity):
+      Status Code: 400
+      Data: error message
+  */
+  private function approveRequest(){
+    $cuid = mysqli_real_escape_string($this->conn, $_POST['cuid']);
+    $serial_no = mysqli_real_escape_string($this->conn, $_POST['serial_no']);
+    
+    // get pending contract information
+    $sql = "SELECT * FROM pending_contracts WHERE cuid=".$cuid." AND serial_no='".$serial_no."'";
+    
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $request = $result->fetch_assoc();
+    if(!$request){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Did not find matching pending contract',
+        $this->conn->error
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $start_date = $request['start_date'];
+    $end_date = $request['end_date'];
+
+    // insert into active_contracts
+    $sql = "INSERT INTO active_contracts (cuid, serial_no, start_date, end_date) 
+    VALUES ('".$cuid."', '".$serial_no."', '".$start_date."', '".$end_date."')";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+      return;
+    }  
+
+    // delete from pending_contracts
+    $sql = "DELETE FROM pending_contracts WHERE cuid=".$cuid." AND serial_no='".$serial_no."'";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+    } else {
+      $response = new Response(
+        'Success',
+        'Successfully approved contract'
+      );
+      print $response->toJson();
+    }
+  }
+
   /*
     Expects: 
       Post with variables 'cuid' and 'serial_no'
@@ -1149,6 +1237,17 @@ class AjaxHandler{
         }
         break;
 
+      case "approve_request":
+        requirePost('cuid');
+        requirePost('serial_no');
+
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'manager'){
+          $this->approveRequest();
+        } else {
+          $this->unauthorized('Only managers can approve requests.');
+        }
+        break;
+
       case "deny_request":
         requirePost('cuid');
         requirePost('serial_no');
@@ -1156,7 +1255,7 @@ class AjaxHandler{
         if(isset($_SESSION['role']) && $_SESSION['role'] == 'manager'){
           $this->denyRequest();
         } else {
-          $this->unauthorized('Only managers can approve and deny requests.');
+          $this->unauthorized('Only managers can deny requests.');
         }
         break;
 

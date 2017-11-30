@@ -732,6 +732,7 @@ class AjaxHandler{
       Status Code: 401
       Data: username of session
   */
+      /*
   private function getUserContracts(){
     if($_SESSION['cuid'] != $_GET['cuid']){
       http_response_code(401);
@@ -780,7 +781,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
   /*
     Expects: 
       GET with optional variables 'cuid', 'search', 'showActive', and 'showPending'
@@ -962,6 +963,7 @@ class AjaxHandler{
       Status Code: 400
       Data: serial_no, cuid
   */
+      /*
   private function approveRequest(){
     if($_SESSION['role'] != 'manager'){
       http_response_code(401);
@@ -982,7 +984,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
   /*
     Expects: 
       Post with variable 'serial_no, cuid'
@@ -1000,6 +1002,7 @@ class AjaxHandler{
       Status Code: 400
       Data: serial_no, cuid
   */
+      /*
   private function denyRequest(){
     if(!($_SESSION['role'] == 'manager') &&
       !($_SESSION['role'] == 'user' && $_POST['cuid'] == $_SESSION['cuid']) ){
@@ -1021,7 +1024,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
   /*
     Expects: 
       Post with variable 'serial_no'
@@ -1038,6 +1041,7 @@ class AjaxHandler{
       Status Code: 400
       Data: serial_no
   */
+      /*
   private function endContract(){
     if($_SESSION['role'] != 'manager'){
       http_response_code(401);
@@ -1058,7 +1062,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
 
   /*
     Expects: 
@@ -1205,15 +1209,15 @@ class AjaxHandler{
       case "delete_user":
         $this->deleteUser();
         break;
-*/
       case "get_contracts":
         $this->getContracts();
         break;
 
+*/
       case "make_request":
         $this->makeRequest();
         break;
-
+/*
       case "approve_request":
         $this->approveRequest();
         break;
@@ -1225,7 +1229,7 @@ class AjaxHandler{
       case "end_contract":
         $this->endContract();
         break;
-
+*/
       case "sign_in":
         // TODO: check for PVs here
         $this->signIn($_POST['username'], $_POST['password']);
