@@ -9,7 +9,7 @@ int main() {
 	string condition [] = {"needs repair", "Good", "Fair", "Poor", "new"};
 	string firstName [] = {"Bob", "Bill", "Gina", "Jennifer", "Tom", "George", "Chris", "Caroline", "Rachel", "Jill"};
 	string lastName [] = {"Smith", "Vasquez", "Todd", "Adams", "Willis", "Green", "Doofenshmirtz", "Hill"};
-	string role [] = {"student", "student", "student", "student", "manager", "manager", "admin"};
+	string role [] = {"user", "user", "user", "user", "manager", "manager", "admin"};
 	string address [] = {"Mulberry st", "Lois ln", "Linco ln", "Be st", "Round cir"};
 	string city [] = {"Chernobyl", "Minas Tirith", "Clemson", "Columbia", "Gungan", "City city"};
 	string state [] = {"Ofmind", "Gondor", "Narnia", "South Carolina", "Solid", "Plasma"};
