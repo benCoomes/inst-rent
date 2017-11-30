@@ -7,7 +7,7 @@ angular.module('instRent.header', [])
   
   $scope.signOut = function() {
     $http({
-      url:'php/ajax_handlers_cst.php?action=sign_out',
+      url:'php/ajax_handlers.php?action=sign_out',
       method: 'POST',
       data: $httpParamSerializerJQLike([]),
       headers: {
