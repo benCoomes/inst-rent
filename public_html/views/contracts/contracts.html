@@ -19,10 +19,10 @@
               <div class="col-md-10">
                 <div class="form-check form-check-inline">
                   <label class="form-check-label">
-                    <input ng-model="filterForm.showActive" ng-change="getContracts()" class="form-check-input" type="checkbox">&nbsp;Active&nbsp;
+                    <input ng-model="filterForm.show_active" ng-change="getContracts()" class="form-check-input" type="checkbox">&nbsp;Active&nbsp;
                   </label>
                   <label class="form-check-label">
-                    <input ng-model="filterForm.showPending" ng-change="getContracts()" class="form-check-input" type="checkbox">&nbsp;Pending&nbsp;
+                    <input ng-model="filterForm.show_pending" ng-change="getContracts()" class="form-check-input" type="checkbox">&nbsp;Pending&nbsp;
                   </label>
                 </div>
               </div>
@@ -48,16 +48,16 @@
       </thead>
       <tbody>
         <tr ng-repeat='c in contracts'>
-          <td>{{c.start}}</td>
-          <td>{{c.end}}</td>
+          <td>{{c.start_date}}</td>
+          <td>{{c.end_date}}</td>
           <td>{{c.cuid}}</td>
           <td>{{c.username}}</td>
           <td>{{c.serial_no}}</td>
           <td>{{c.type}}</td>
           <td>
-            <button ng-if="c.status == 'pending'" ng-click="approveRequest(c.cuid, c.serial_no)" class="btn btn-clemson-purple">Approve</button>
-            <button ng-if="c.status == 'pending'" ng-click="denyRequest(c.cuid, c.serial_no)" class="btn btn-danger">Deny</button>
-            <button ng-if="c.status == 'active'" ng-click="endContract(c.serial_no)" class="btn btn-danger">Terminate</button>
+            <button ng-if="c.active == 'false'" ng-click="approveRequest(c.cuid, c.serial_no)" class="btn btn-clemson-purple">Approve</button>
+            <button ng-if="c.active == 'false'" ng-click="denyRequest(c.cuid, c.serial_no)" class="btn btn-danger">Deny</button>
+            <button ng-if="c.active == 'true'" ng-click="endContract(c.serial_no)" class="btn btn-danger">Terminate</button>
           </td>
         </tr>
       </tbody> 

@@ -21,16 +21,17 @@ angular.module('instRent.contracts', ['ngRoute'])
     if($scope.filterForm.search){
       qsparams = qsparams + '&search=' + $scope.filterForm.search;
     }
-    if($scope.filterForm.hasOwnProperty('showActive') && $scope.filterForm.showActive == false){
-      qsparams = qsparams + '&showActive=false';
+    if($scope.filterForm.hasOwnProperty('show_active') && $scope.filterForm.show_active == false){
+      qsparams = qsparams + '&show_active=false';
     }
-    if($scope.filterForm.hasOwnProperty('showPending') && $scope.filterForm.showPending == false){
-      qsparams = qsparams + '&showPending=false';
+    if($scope.filterForm.hasOwnProperty('show_pending') && $scope.filterForm.show_pending == false){
+      qsparams = qsparams + '&show_pending=false';
     }
     console.log('qsparams: ' + qsparams);
 
-    $http.get('php/ajax_handlers_cst.php?' + qsparams)
+    $http.get('php/ajax_handlers.php?' + qsparams)
     .then(function onSuccess(result){
+      console.log(result.data);
       $scope.contracts = result.data.data;
     }, function onError(result){
       $scope.contracts = [];
@@ -91,7 +92,7 @@ angular.module('instRent.contracts', ['ngRoute'])
     console.log("ending contract: " + serial_no);
     if($rootScope.session.role == 'manager'){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=approve_request',
+        url: 'php/ajax_handlers_cst.php?action=end_contract',
         method: 'POST',
         data: $httpParamSerializerJQLike({'serial_no' : serial_no}),
         headers: {
@@ -114,8 +115,8 @@ angular.module('instRent.contracts', ['ngRoute'])
   $scope.resetForm = function(){
     $scope.filterForm = {
       'search' : '',
-      'showActive' : true,
-      'showPending' : true
+      'show_active' : true,
+      'show_pending' : true
     }
     $scope.getContracts();
   }

@@ -750,6 +750,82 @@ class AjaxHandler{
     return;
   }
 
+  private function getContracts(){
+    $ac_sql = "SELECT ac.cuid cuid, ac.start_date start_date, ac.end_date end_date, 
+      u.username username, i.serial_no serial_no, i.type type, 'true' active 
+      FROM active_contracts ac 
+      INNER JOIN instruments i ON ac.serial_no = i.serial_no
+      INNER JOIN users u ON u.cuid = ac.cuid
+      WHERE 1=1";
+    $pc_sql = "SELECT pc.cuid cuid, pc.start_date start_date, pc.end_date end_date, 
+      u.username username, pc.serial_no serial_no, i.type type, 'false' active 
+      FROM pending_contracts pc
+      INNER JOIN instruments i ON pc.serial_no = i.serial_no
+      INNER JOIN users u ON u.cuid = pc.cuid
+      WHERE 1=1";
+
+    if(isset($_GET['cuid'])){
+      $cuid = mysqli_real_escape_string($this->conn, $_GET['cuid']);
+      $ac_sql = $ac_sql." AND ac.cuid ='".$cuid."'";
+      $pc_sql = $pc_sql." AND pc.cuid ='".$cuid."'";
+    }
+    if(isset($_GET['search'])){
+      $search = mysqli_real_escape_string($this->conn, $_GET['search']);
+      $ac_sql = $ac_sql." AND (ac.cuid LIKE '%".$search."%' OR 
+        ac.serial_no LIKE '%".$search."%' OR 
+        u.username LIKE '%".$search."%' OR 
+        i.type LIKE '%".$search."%')";
+      $pc_sql = $pc_sql." AND (pc.cuid LIKE '%".$search."%' OR 
+        pc.serial_no LIKE '%".$search."%' OR 
+        u.username LIKE '%".$search."%' OR 
+        i.type LIKE '%".$search."%')";
+    }
+
+    $sql = '';
+    $getActive = (!isset($_GET['show_active']) || $_GET['show_active'] != 'false');
+    $getPending = (!isset($_GET['show_pending']) || $_GET['show_pending'] != 'false');
+    if($getActive && $getPending){
+      $sql = $ac_sql." UNION ALL ".$pc_sql;
+    } else if($getActive){
+      $sql = $ac_sql;
+    } else if($getPending){
+      $sql = $pc_sql;
+    } else {
+      // no possible results, so don't execute query
+      $response = new Response(
+        'Success',
+        'Got contracts',
+        array()
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $contracts = array();
+    while($row = $result->fetch_assoc()){
+      $contracts[] = $row;
+    }
+
+    $response = new Response(
+      'Success',
+      'Got contracts',
+      $contracts
+    );
+    print $response->toJson();
+  }
+
   /*
     Expects: 
       Post with variables 'username' and 'password'
@@ -764,9 +840,9 @@ class AjaxHandler{
   private function signIn($username, $password){
     $status = '';
     $msg = '';
-    $data = [
+    $data = array(
         'username' => $username
-    ];
+    );
 
     $isUser = $this->isUser($username, $password);
     
@@ -968,6 +1044,16 @@ class AjaxHandler{
           $this->deleteUser();
         } else {
           $this->unauthorized("Only admins can delete users.");
+        }
+        break;
+
+      case "get_contracts":
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'user' && isset($_GET['cuid']) && $_GET['cuid'] == $_SESSION['cuid']){
+          $this->getContracts();
+        } else if(isset($_SESSION['role']) && $_SESSION['role'] == 'manager'){
+          $this->getContracts();
+        } else {
+          $this->unauthorized("You do not have permission to view the requested contracts.");
         }
         break;
 

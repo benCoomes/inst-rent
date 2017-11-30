@@ -9,7 +9,7 @@ angular.module('instRent.userHome', ['ngRoute'])
 
 .controller('UserHomeCtrl', function UserHomeCtrl($scope, $rootScope, $location, $http, $httpParamSerializerJQLike){
   $scope.getContracts = function(){
-    $http.get('php/ajax_handlers_cst.php?action=get_contracts&cuid=' + $rootScope.session.cuid)
+    $http.get('php/ajax_handlers.php?action=get_contracts&cuid=' + $rootScope.session.cuid)
     .then(function onSuccess(result){
       $scope.contracts = result.data.data;
       console.log("Got contracts for user: " + $rootScope.session.cuid)

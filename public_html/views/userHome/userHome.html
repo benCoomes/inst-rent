@@ -23,9 +23,9 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat='c in contracts | filter:{status : "active"}'>
-                <td>{{c.start}}</td>
-                <td>{{c.end}}</td>
+              <tr ng-repeat='c in contracts | filter:{active : "true"}'>
+                <td>{{c.start_date}}</td>
+                <td>{{c.end_date}}</td>
                 <td>{{c.serial_no}}</td>
                 <td>{{c.type}}</td>
               </tr>
@@ -52,9 +52,9 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat='c in contracts | filter:{status : "pending"}'>
-                <td>{{c.start}}</td>
-                <td>{{c.end}}</td>
+              <tr ng-repeat='c in contracts | filter:{active : "false"}'>
+                <td>{{c.start_date}}</td>
+                <td>{{c.end_date}}</td>
                 <td>{{c.serial_no}}</td>
                 <td>{{c.type}}</td>
                 <td>
