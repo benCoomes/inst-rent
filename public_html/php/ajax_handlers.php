@@ -750,6 +750,21 @@ class AjaxHandler{
     return;
   }
 
+  /*
+    Expects: 
+      GET with optional variables 'cuid', 'search', 'show_active', and 'show_pending'
+    Permissions:
+      Manager: Managers may perform this action.
+      User: User may perform this action only when cuid is specified, and only results with matching cuid are returned
+    Success:
+      Condition: Return rows from contracts table using given variables - no errors
+      Status Code: 200
+      Data: for each contract: 
+        start_date, end_date, cuid, username, serial_no, type, active
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+  */
   private function getContracts(){
     $ac_sql = "SELECT ac.cuid cuid, ac.start_date start_date, ac.end_date end_date, 
       u.username username, i.serial_no serial_no, i.type type, 'true' active 
@@ -824,6 +839,83 @@ class AjaxHandler{
       $contracts
     );
     print $response->toJson();
+  }
+
+  /*
+    Expects: 
+      Post with variables 'cuid' and 'serial_no'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Delete row from pending_contracts table using given cuid - no errors
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error / referential integrity):
+      Status Code: 400
+      Data: error message
+  */
+  private function denyRequest(){
+    $cuid = mysqli_real_escape_string($this->conn, $_POST['cuid']);
+    $serial_no = mysqli_real_escape_string($this->conn, $_POST['serial_no']);
+    $sql = "DELETE FROM pending_contracts WHERE cuid=".$cuid." AND serial_no='".$serial_no."'";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+    } else {
+      $response = new Response(
+        'Success',
+        'Successfully denied contract.'
+      );
+      print $response->toJson();
+    } 
+  }
+
+  /*
+    Expects: 
+      Post with variable  'serial_no'
+    Permissions:
+      Manager: Only managers may perform this action.
+    Success:
+      Condition: Delete row from active_contracts table using given cuid - no errors
+      Status Code: 200
+      Data: none
+    Failure (insuffecient permission):
+      Status Code: 401
+      Data: username of session
+    Failure (integrity error / referential integrity):
+      Status Code: 400
+      Data: error message
+  */
+  private function endContract(){
+    $serial_no = mysqli_real_escape_string($this->conn, $_POST['serial_no']);
+    $sql = "DELETE FROM active_contracts WHERE serial_no='".$serial_no."'";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+    } else {
+      $response = new Response(
+        'Success',
+        'Successfully denied contract.'
+      );
+      print $response->toJson();
+    } 
   }
 
   /*
@@ -1054,6 +1146,27 @@ class AjaxHandler{
           $this->getContracts();
         } else {
           $this->unauthorized("You do not have permission to view the requested contracts.");
+        }
+        break;
+
+      case "deny_request":
+        requirePost('cuid');
+        requirePost('serial_no');
+
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'manager'){
+          $this->denyRequest();
+        } else {
+          $this->unauthorized('Only managers can approve and deny requests.');
+        }
+        break;
+
+      case "end_contract":
+        requirePost('serial_no');
+
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'manager'){
+          $this->endContract();
+        } else {
+          $this->unauthorized('Only managers can terminate contracts.');
         }
         break;
 

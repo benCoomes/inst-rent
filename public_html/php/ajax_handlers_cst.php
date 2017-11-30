@@ -796,6 +796,7 @@ class AjaxHandler{
       Status Code: 401
       Data: username of session
   */
+  /*
   private function getContracts(){
     if($_SESSION['role'] == 'user'){
       // spaghettii code, woooooo!
@@ -903,7 +904,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
   /*
     Expects: 
       Post with variable 'serial_no', 'cuid', 'start', and 'end'

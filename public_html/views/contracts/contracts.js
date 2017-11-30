@@ -44,7 +44,7 @@ angular.module('instRent.contracts', ['ngRoute'])
     console.log("approving request: " + cuid + ", " + serial_no);
     if($rootScope.session.role == 'manager'){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=approve_request',
+        url: 'php/ajax_handlers.php?action=approve_request',
         method: 'POST',
         data: $httpParamSerializerJQLike({'cuid' : cuid, 'serial_no' : serial_no}),
         headers: {
@@ -68,7 +68,7 @@ angular.module('instRent.contracts', ['ngRoute'])
     console.log("denying request: " + cuid + ", " + serial_no);
     if($rootScope.session.role == 'manager'){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=deny_request',
+        url: 'php/ajax_handlers.php?action=deny_request',
         method: 'POST',
         data: $httpParamSerializerJQLike({'cuid' : cuid, 'serial_no' : serial_no}),
         headers: {
@@ -92,7 +92,7 @@ angular.module('instRent.contracts', ['ngRoute'])
     console.log("ending contract: " + serial_no);
     if($rootScope.session.role == 'manager'){
       $http({
-        url: 'php/ajax_handlers_cst.php?action=end_contract',
+        url: 'php/ajax_handlers.php?action=end_contract',
         method: 'POST',
         data: $httpParamSerializerJQLike({'serial_no' : serial_no}),
         headers: {
