@@ -10,7 +10,10 @@ angular.module('instRent.login', ['ngRoute'])
 }])
 
 .controller('LoginCtrl', function LoginCtrl($scope, $rootScope,sessionLoader, $route, $location, $http, $httpParamSerializerJQLike){
-  $scope.informationalTitle = "This is coming from the loginCtrl in login.js!";
+  $scope.informationalTitle = "Welcome to the Clemson University Instrument Rental Website!";
+  $scope.informationalText = "This website simplifies the process of renting an instrument from Clemson."
+    + " Anyone with a CUID can make an account, which lets you see available instruments and make rental requests."
+    + " Requests are then approved or denied by rental managers. Happy performing!"
 
   $scope.signInForm = {
     'username' : '',
