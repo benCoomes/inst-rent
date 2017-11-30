@@ -83,10 +83,19 @@ class AjaxHandler{
     Get user role, cuid for row with username = $username
   */
   private function startUserSession($username){
-    // fake implementation for testing
-      $_SESSION['username'] = $username;
-      $_SESSION['role'] = 'user';
-      $_SESSION['cuid'] = 'C1234567';
+    $username = mysqli_real_escape_string($this->conn, $username);
+    $sql = "SELECT * FROM users WHERE username='".$username."'";
+
+    $result = $this->conn->query($sql);
+    if(!$result){
+      return false;
+    }
+
+    $user = $result->fetch_assoc();  
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['role'] = $user['role'];
+    $_SESSION['cuid'] = $user['cuid'];
+    return true;
   }
 
 
@@ -99,21 +108,21 @@ class AjaxHandler{
     if(array_key_exists('cuid', $_SESSION)){
       $response->setStatus('Success');
       $response->setMsg('Session data retrieved.');
-      $response->setData([
+      $response->setData(array(
         'username' => $_SESSION['username'],
         'role' => $_SESSION['role'],
         'cuid' => $_SESSION['cuid'],
         'signedIn' => True
-      ]);
+      ));
     } else {
       $response->setStatus('Success');
       $response->setMsg('No session data');
-      $response->setData([
+      $response->setData(array(
         'username' => Null,
         'role' => Null,
         'cuid' => Null,
         'signedIn' => False
-      ]);
+      ));
     }
 
     print $response->toJson();
@@ -427,7 +436,7 @@ class AjaxHandler{
       data: session username and role
   */
   private function getUsers(){
-    $sql = "SELECT cuid, username, first_name, last_name, role, email FROM users WHERE 1=1";
+    $sql = "SELECT cuid, username, first_name, last_name, role, email, age, address, phone FROM users WHERE 1=1";
 
     if(isset($_GET['search'])){
       $search = mysqli_real_escape_string($this->conn, $_GET['search']);
@@ -631,6 +640,18 @@ class AjaxHandler{
       $last_name = mysqli_real_escape_string($this->conn, $_POST['last_name']);
       $colVal['last_name'] = $last_name;
     }
+    if(isset($_POST['age']) && !empty($_POST['age'])){
+      $age = mysqli_real_escape_string($this->conn, $_POST['age']);
+      $colVal['age'] = $age;
+    }
+    if(isset($_POST['phone']) && !empty($_POST['phone'])){
+      $phone = mysqli_real_escape_string($this->conn, $_POST['phone']);
+      $colVal['phone'] = $phone;
+    }
+    if(isset($_POST['address']) && !empty($_POST['address'])){
+      $address = mysqli_real_escape_string($this->conn, $_POST['address']);
+      $colVal['address'] = $address;
+    }
     // these fields are restricted to admins
     if($_SESSION['role'] == 'admin'){
       if(isset($_POST['password']) && !empty($_POST['password'])){
@@ -740,15 +761,6 @@ class AjaxHandler{
     } 
   }
 
-  private function getProfileData(){
-    //stubbed
-    $response = new Response(
-      'Success',
-      'Get profile data called.'
-    );
-    print $resonse->toJson();
-    return;
-  }
 
   /*
     Expects: 
@@ -1074,35 +1086,50 @@ class AjaxHandler{
       Data: username
   */
   private function signIn($username, $password){
-    $status = '';
-    $msg = '';
-    $data = array(
-        'username' => $username
-    );
+    $username = mysqli_real_escape_string($this->conn, $username);
+    $password = mysqli_real_escape_string($this->conn, $password);
 
-    $isUser = $this->isUser($username, $password);
-    
-    if($isUser){
-      $this->startUserSession($username);
+    $sql = "SELECT * FROM users WHERE username='".$username."' AND password='".$password."'";
 
-      $status = 'Success';
-      $msg = 'User signed in.';
-      $data['role'] = $_SESSION['role'];
-    } else {
-      $status = 'Error';
-      $msg = 'Could not find user in database.';
+    // catch bad queries
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+      return;
+    } 
+
+    // if user does not exist, login fails
+    $user = $result->fetch_assoc();
+    if(!$user){
       http_response_code(401);
+      $response = new Response(
+        'Error',
+        'Invalid Credentials'
+      );
+      print $response->toJson();
+      return;
     }
 
-
-    $response = new Response($status, $msg, $data);
+    // sign user in 
+    $this->startUserSession($username);
+    $response = new Response(
+      'Success',
+      'User logged in.'
+    );
     print $response->toJson();
+    return;
   }
 
   /*
     Expects: 
       Post with variables:
-        'cuid', 'cuEmail', 'username', 'firstName',
+        'cuid', 'email', 'username', 'firstName',
         'lastName', 'password', 'passwordConfirm'
     Success: 
       Condition: User entry is created in db. User is signed in.
@@ -1114,22 +1141,50 @@ class AjaxHandler{
       Response Code: 400
   */
   private function signUp(){
-    // fake method for testing
+    $cuid = mysqli_real_escape_string($this->conn, $_POST['cuid']);
+    $email = mysqli_real_escape_string($this->conn, $_POST['email']);
+    $first_name = mysqli_real_escape_string($this->conn, $_POST['first_name']);
+    $last_name = mysqli_real_escape_string($this->conn, $_POST['last_name']);
+    $username = mysqli_real_escape_string($this->conn, $_POST['username']);
+    $password = mysqli_real_escape_string($this->conn, $_POST['password']);
+    $password_confirm = mysqli_real_escape_string($this->conn, $_POST['password_confirm']);
+    $role = 'user';
+
+    // validate passwords
+    if($password != $password_confirm){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Passwords do not match.'
+      );
+      print $response->toJson();
+      return;
+    }
+
+    $sql = "INSERT INTO users (cuid, email, username, first_name, last_name, password, role) 
+      VALUES ('".$cuid."', '".$email."', '".$username."', '".$first_name."', '".$last_name."', '".$password."', '".$role."')";
+
+    // execute and send success/error message
+    $result = $this->conn->query($sql);
+    if(!$result){
+      http_response_code(400);
+      $response = new Response(
+        'Error',
+        'Failed to execute query',
+        $this->conn->error
+      );
+      print $response->toJson();
+      return;
+    } 
+
+    // sign user in 
+    $this->startUserSession($username);
     $response = new Response(
       'Success',
-      'Sign Up function called.',
-      array(
-        'cuid' => $_POST['cuid'],
-        'cuEmail' => $_POST['cuEmail'],
-        'username' => $_POST['username'],
-        'firstName' => $_POST['firstName'],
-        'lastName' => $_POST['lastName'],
-        'password' => $_POST['password'],
-        'passwordConfirm' => $_POST['passwordConfirm']
-      )
+      'User created and logged in.'
     );
-
     print $response->toJson();
+    return;
   }
 
   private function signOut(){
@@ -1238,8 +1293,8 @@ class AjaxHandler{
         break;
 
       case "get_users":
-        if(isset($_SESSION['role']) && $_SESSION['role'] == 'user'){
-          $this->getProfileData();
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'user' && isset($_SESSION['cuid']) && $_SESSION['cuid'] == $_GET['cuid']){
+          $this->getUsers();
         } else if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin') {
           $this->getUsers();
         } else {
@@ -1348,6 +1403,14 @@ class AjaxHandler{
         break;
 
       case "sign_up":
+        requirePost('cuid');
+        requirePost('email');
+        requirePost('username');
+        requirePost('first_name');
+        requirePost('last_name');
+        requirePost('password');
+        requirePost('password_confirm');
+
         $this->signUp();
         break;
 

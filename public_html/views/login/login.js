@@ -19,12 +19,12 @@ angular.module('instRent.login', ['ngRoute'])
 
   $scope.signUpForm = {
     'cuid' : '',
-    'cuEmail' : '',
+    'email' : '',
     'username' : '',
-    'firstName' : '',
-    'lastName' : '',
+    'first_name' : '',
+    'last_name' : '',
     'password' : '',
-    'passwordConfirm' : ''
+    'password_confirm' : ''
   }
 
   // these functions will be called when the forms are submitted. This
@@ -32,7 +32,7 @@ angular.module('instRent.login', ['ngRoute'])
   $scope.submitSignInForm = function(){
     // make an ajax post, and define success and error handlers.
     $http({
-      url:'php/ajax_handlers_cst.php?action=sign_in',
+      url:'php/ajax_handlers.php?action=sign_in',
       method:'POST',
       data: $httpParamSerializerJQLike($scope.signInForm),
       headers: {
@@ -50,19 +50,18 @@ angular.module('instRent.login', ['ngRoute'])
         } else if ($rootScope.session.role == 'manager'){
           $location.url('managerHome');
         } else {
-          // TODO: add generic error page to send users to in case role is not any of the three valid roles
           $location.url('userHome');
         }
       });
     }, function onError(result){
-      // do things with result on error
+      alert('Invalid username and password combination.')
       console.log(result.data);
     })
   }
 
   $scope.submitSignUpForm = function(){
      $http({
-      url:'php/ajax_handlers_cst.php?action=sign_up',
+      url:'php/ajax_handlers.php?action=sign_up',
       method:'POST',
       data: $httpParamSerializerJQLike($scope.signUpForm),
       headers: {
@@ -71,11 +70,13 @@ angular.module('instRent.login', ['ngRoute'])
       timeout: 2000
     })
     .then(function onSuccess(result){
-      // do things with result on success
-      // be sure to set the root session!!
       console.log(result.data);
+      sessionLoader.getSession().then(function(result){
+        $rootScope.session = result;
+        $location.url('userHome');
+      });
     }, function onError(result){
-      // do things with result on error
+      alert('failed to create user.');
       console.log(result.data);
     })
   }

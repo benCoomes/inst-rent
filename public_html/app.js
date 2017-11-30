@@ -19,7 +19,7 @@ angular.module('instRent', [
 
 .factory('sessionLoader', function($http){
   var getSession = function() {
-    return $http.get('php/ajax_handlers_cst.php?action=get_session')
+    return $http.get('php/ajax_handlers.php?action=get_session')
     .then(function onSuccess(result){
       return result.data.data;
     }, function onError(result){

@@ -92,6 +92,7 @@ class AjaxHandler{
     return True if found
     return False otherwise
   */
+    /*
   private function isUser($username, $password){
     foreach($this->users as $user){ 
       if($user['username'] == $username && $user['password'] == $password){
@@ -100,11 +101,12 @@ class AjaxHandler{
     }
     return False;
   }
-
+*/
   /*
     Get user role, cuid for row with username = $username
     Return false if user with username is not found
   */
+    /*
   private function startUserSession($username){
     // fake implementation for testing
     foreach($this->users as $user){
@@ -117,12 +119,12 @@ class AjaxHandler{
     }
     return False;
   }
-
+*/
 
   /*****************************************
     Action Methods
   ****************************************/
-
+/*
   private function getSession(){
     $response = new Response();
     if(array_key_exists('cuid', $_SESSION)){
@@ -147,7 +149,7 @@ class AjaxHandler{
 
     print $response->toJson();
   }
-
+*/
   /*
     Expects: 
       GET with no variables
@@ -922,6 +924,7 @@ class AjaxHandler{
       Status Code: 400
       Data: serial_no, cuid, start, end 
   */
+      /*
   private function makeRequest(){
     if($_SESSION['role'] != 'user' || $_SESSION['cuid'] != $_POST['cuid']){
       http_response_code(401);
@@ -946,7 +949,7 @@ class AjaxHandler{
     print $response->toJson();
     return;
   }
-
+*/
   /*
     Expects: 
       Post with variable 'serial_no, cuid'
@@ -1075,6 +1078,7 @@ class AjaxHandler{
       Status Code: 401
       Data: username
   */
+      /*
   private function signIn($username, $password){
     $status = '';
     $msg = '';
@@ -1099,7 +1103,7 @@ class AjaxHandler{
     print $response->toJson();
   }
 
-
+*/
   /*
     Expects: 
       Post with variables:
@@ -1114,6 +1118,7 @@ class AjaxHandler{
         Password is invalid. Email is not valid. CUID is taken or invalid.
       Response Code: 400
   */
+      /*
   private function signUp(){
     // fake method for testing
     $response = new Response(
@@ -1132,7 +1137,7 @@ class AjaxHandler{
 
     print $response->toJson();
   }
-
+*/
   private function signOut(){
     $_SESSION = array();
 
@@ -1213,11 +1218,11 @@ class AjaxHandler{
         $this->getContracts();
         break;
 
-*/
+
       case "make_request":
         $this->makeRequest();
         break;
-/*
+
       case "approve_request":
         $this->approveRequest();
         break;

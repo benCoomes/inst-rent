@@ -36,14 +36,15 @@
           <form class="form" id="su-form" ng-submit="submitSignUpForm()">
             <div class="form-group row">
               <label for="su-cuid" class="col-md-4 col-form-label">CUID</label>
-              <div class="col-md-8">
-                <input type="" id="su-cuid" class="form-control" ng-model="signUpForm.cuid">
+              <div class="col-md-8 input-group">
+                <div class="input-group-addon">C</div>
+                <input type="number" id="su-cuid" class="form-control" ng-model="signUpForm.cuid">
               </div>
             </div>
             <div class="form-group row">
               <label for="su-email" class="col-md-4 col-form-label">Clemson Email</label>
               <div class="col-md-8">
-                <input type="" id="su-email" class="form-control" ng-model="signUpForm.cuEmail">
+                <input type="email" id="su-email" class="form-control" ng-model="signUpForm.email">
               </div>
             </div>
             <div class="form-group row">
@@ -55,13 +56,13 @@
             <div class="form-group row">
               <label for="su-fname" class="col-md-4 col-form-label">First Name</label>
               <div class="col-md-8">
-                <input type="text" id="su-fname" class="form-control" ng-model="signUpForm.firstName">
+                <input type="text" id="su-fname" class="form-control" ng-model="signUpForm.first_name">
               </div>
             </div>
             <div class="form-group row">
               <label for="su-lname" class="col-md-4 col-form-label">Last Name</label>
               <div class="col-md-8">
-                <input type="text" id="su-lname" class="form-control" ng-model="signUpForm.lastName">
+                <input type="text" id="su-lname" class="form-control" ng-model="signUpForm.last_name">
               </div>
             </div>
             <div class="form-group row">
@@ -73,7 +74,7 @@
             <div class="form-group row">
               <label for="su-confirm-password" class="col-md-4 col-form-label">Confirm Password</label>
               <div class="col-md-8">
-                <input type="password" id="su-confirm-password" class="form-control" ng-model="signUpForm.passwordConfirm">
+                <input type="password" id="su-confirm-password" class="form-control" ng-model="signUpForm.password_confirm">
               </div>
             </div>
             <input type="submit" value="Sign Up" class="btn btn-clemson-orange">

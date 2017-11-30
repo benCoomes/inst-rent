@@ -10,24 +10,24 @@ angular.module('instRent.editProfile', ['ngRoute'])
 .controller('editProfileCtrl', function editProfileCtrl($scope, $rootScope, $http, $httpParamSerializerJQLike){
   $scope.loadForm = function(){
     $scope.editUserForm = {
-      'cuEmail' : '',
-      'firstName' : '',
-      'lastName' : '',
+      'email' : '',
+      'first_name' : '',
+      'last_name' : '',
       'age' : '',
-      'telephone' : '',
+      'phone' : '',
       'address' : '',   
     }
 
-    $http.get('php/ajax_handlers_cst.php?action=get_users&cuid=' + $rootScope.session.cuid)
+    $http.get('php/ajax_handlers.php?action=get_users&cuid=' + $rootScope.session.cuid)
     .then(function onSuccess(result){
       let user = result.data.data[0];
       console.log(result);
       if(user){      
-        $scope.editUserForm.cuEmail = user.cuEmail;
-        $scope.editUserForm.firstName = user.firstName;
-        $scope.editUserForm.lastName = user.lastName;
-        $scope.editUserForm.age = user.age;
-        $scope.editUserForm.telephone = user.telephone;
+        $scope.editUserForm.email = user.email;
+        $scope.editUserForm.first_name = user.first_name;
+        $scope.editUserForm.last_name = user.last_name;
+        $scope.editUserForm.age = parseInt(user.age);
+        $scope.editUserForm.phone = user.phone;
         $scope.editUserForm.address = user.address;
         $scope.validate();
       } else {
@@ -51,15 +51,15 @@ angular.module('instRent.editProfile', ['ngRoute'])
 
   $scope.submitForm = function(){
     $http({
-      url: 'php/ajax_handlers_cst.php?action=edit_user',
+      url: 'php/ajax_handlers.php?action=edit_user',
       method: 'POST',
       data: $httpParamSerializerJQLike({
         "cuid" : $rootScope.session.cuid,
-        "cuEmail" : $scope.editUserForm.cuEmail,
-        "firstname" : $scope.editUserForm.firstname,
-        "lastName" : $scope.editUserForm.lastName,
+        "email" : $scope.editUserForm.email,
+        "first_name" : $scope.editUserForm.first_name,
+        "last_name" : $scope.editUserForm.last_name,
         "age" : $scope.editUserForm.age,
-        "telephone" : $scope.editUserForm.telephone,
+        "phone" : $scope.editUserForm.phone,
         "address" : $scope.editUserForm.address
       }),
       headers: {
