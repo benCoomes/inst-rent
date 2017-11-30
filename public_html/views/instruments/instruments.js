@@ -54,6 +54,25 @@ angular.module('instRent.instruments', ['ngRoute'])
     .then(function onSuccess(result){
       console.log(result.data);
       $scope.instruments = result.data.data;
+      // check to see if each instrument has a pending contract for the user
+      if($rootScope.session.role == 'user'){
+        $http.get('php/ajax_handlers.php?action=get_contracts&show_active=false&cuid=' + $rootScope.session.cuid)
+        .then(function onSuccess(result){
+          let contracts = result.data.data;
+          console.log("Got pending contracts for user: " + $rootScope.session.cuid)
+          for(inst of $scope.instruments){
+            inst.hasPendingContract = false;
+            for(contract of contracts){
+              if(inst.serial_no == contract.serial_no){
+                inst.hasPendingContract = true;
+              }
+            }
+          }
+        }, function onError(result){
+          console.log('failed to get contracts');
+          console.log(result);
+        })
+      }
     }, function onError(result){
       $scope.instruments = [];
       console.log('failed to get instruments')
