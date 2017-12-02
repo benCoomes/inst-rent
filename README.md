@@ -3,7 +3,7 @@
 * Benjamin Coomes (bcoomes)
 * Christopher West (cjwest)
 
-## Directory Structure : public_html
+## public_html
 
 ### css
 Contains custom css files. Most styling is done via bootstrap delivered over a CDN.
@@ -35,3 +35,14 @@ Defines the controller for each view, a session loader service, and the behavior
 
 ### index.html
 Includes all dependencies, including the javascript files that define views. Sets the page header and the view pane where views are loaded.
+
+## dbreset
+
+### dbreset.php
+file used to reset production database.
+
+### dbreset_simple.php
+file used to reset test database.
+
+###test_data
+contains files used to populate test and production databases, as well as populate.cpp, which we used to create the production datasets.
