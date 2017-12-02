@@ -1,5 +1,8 @@
+// name this module so that that angular can load it, and define its dependencies
 angular.module('instRent.instruments', ['ngRoute'])
 
+// configure the route provider, specifying the controller and template
+// to be used for the provided route
 .config(['$routeProvider', function($routeProvider){
   $routeProvider.when('/instruments', {
     templateUrl: 'views/instruments/instruments.html',
@@ -7,18 +10,25 @@ angular.module('instRent.instruments', ['ngRoute'])
   });
 }])
 
+// define the 'InstrumentsCtrl' controller
 .controller('InstrumentsCtrl', function InstrumentsCtrl($scope, $rootScope, $routeParams, $http, $httpParamSerializerJQLike, $location){
-  $scope.params = $routeParams;
-  $scope.instruments = [];
-  $scope.instrumentTypes = ["All"];
-  $scope.instrumentConditions = ["All"];
+  // all properties of $scope are available to the template html page
+  $scope.params = $routeParams; // the url parameters 
+  $scope.instruments = []; // the instruments loaded from the database
+  $scope.instrumentTypes = ["All"]; // instrument types in the database
+  $scope.instrumentConditions = ["All"]; //instrument conditions in the database
 
+  // The properties on $scope.filterForm are bound to form input elements in the template. 
+  // Changes there are reflected here
   $scope.filterForm = {
     "search" : "",
     "type" : "All",
     "cond" : "All"
   };
 
+  // Session data is stored in the root scope
+  // Filtering options for 'available' and 'checked out' instruments are 
+  // only available to managers 
   if($rootScope.session.role == 'manager'){
     $scope.filterForm['available'] = true;
     $scope.filterForm['checkedOut'] = false;
@@ -30,8 +40,9 @@ angular.module('instRent.instruments', ['ngRoute'])
     }
   }
 
+  // define a function to get instruments from the database
   $scope.getInstruments = function() {
-    //TODO: encode http chars in search before appending
+    // build the query string parameters based on form values
     let qsparams = 'action=get_instruments';
     if($scope.filterForm.type && $scope.filterForm.type != "All"){
       qsparams = qsparams + '&type=' + $scope.filterForm.type;
@@ -50,9 +61,12 @@ angular.module('instRent.instruments', ['ngRoute'])
     }
     console.log('qsparams: ' +qsparams);
 
+    // make an http GET request
     $http.get('php/ajax_handlers.php?' + qsparams)
+    // define a function to be executed on success (response code == 200)
     .then(function onSuccess(result){
       console.log(result.data);
+      // set the instruments property to the data returned by the php file
       $scope.instruments = result.data.data;
       // check to see if each instrument has a pending contract for the user
       if($rootScope.session.role == 'user'){
@@ -73,6 +87,7 @@ angular.module('instRent.instruments', ['ngRoute'])
           console.log(result);
         })
       }
+    // define a function to be called on error
     }, function onError(result){
       $scope.instruments = [];
       console.log('failed to get instruments')
@@ -80,6 +95,7 @@ angular.module('instRent.instruments', ['ngRoute'])
     });
   }
 
+  // gets the types of instruments currently in the database
   $scope.getInstrumentTypes = function(){
     let qsparams = 'action=get_instrument_types';
     $http.get('php/ajax_handlers.php?' + qsparams)
@@ -91,6 +107,7 @@ angular.module('instRent.instruments', ['ngRoute'])
     });
   }
 
+  // gets the conditions of instruments currently in the database
   $scope.getInstrumentConditions = function(){
     let qsparams = 'action=get_instrument_conditions';
     $http.get('php/ajax_handlers.php?' + qsparams)
@@ -102,24 +119,19 @@ angular.module('instRent.instruments', ['ngRoute'])
     });
   }
 
-  // include check in function on this page? create page for checkin/contract termination?
-  /*
-  $scope.checkInInstrument = function(serial_no){
-    console.log("checking in: " + serial_no);
-    //TODO: reroute to check in form, supplying serial_no to autofill form
-  }
-  */
-
+  // set the route to the edit instrument form
   $scope.editInstrument = function(serial_no){
     $location.url('editInstrument?serial_no=' + serial_no);
   }
 
+  // set the route to the checkout form, providing instrument information in the url
   $scope.checkOutInstrument = function(serial_no, type, cond){
     console.log("checking out: " + serial_no);
     $location.url('makeRequest?serial_no=' + serial_no + 
       '&cond=' + cond + '&type=' + type);
   }
 
+  // make a request to delete an instrument from the database
   $scope.deleteInstrument = function(serial_no){
     if($rootScope.session.role == 'manager'){
       $http({
@@ -143,6 +155,7 @@ angular.module('instRent.instruments', ['ngRoute'])
     }
   }
 
+  // finally, load the page by getting the instruments, the types, and the conditions
   $scope.getInstruments();
   $scope.getInstrumentTypes();
   $scope.getInstrumentConditions();

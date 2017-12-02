@@ -10,6 +10,11 @@
             <div class="form-group row">
               <label for="itf-search" class="col-md-2 col-form-label">Search:</label>
               <div class="col-md-10">
+                <!-- 
+                  This input is linked the 'search' property on $scope via ng-model.
+                  ng-change defines a function that should be called when the value
+                  of this input is changed.
+                --> 
                 <input ng-model="filterForm.search" ng-model-options="{debounce:200}" ng-change="getInstruments()" type="text" id="itf-search" class="form-control">
               </div>
             </div>
@@ -18,6 +23,12 @@
               <div class="col-md-4">
                 <select ng-model="filterForm.type" ng-change="getInstruments()" class="form-control" id="itf-type">
                   <option value="All">All</option>
+                  <!-- 
+                    This option element generates a list of options using ng-repeat.
+                    For each item in the $scope.instrumentTypes array, 
+                    the option element will be repeated, and the value of 
+                    $scope.instrumentTypes[n].type will be set as the text of the option
+                  --> 
                   <option ng-repeat="type in instrumentTypes">{{type}}</option>
                 </select>
               </div>
@@ -29,6 +40,7 @@
                 </select>
               </div>
             </div>
+            <!-- Only load this div if the value of $rootScope.session.role is 'manager' -->
             <div class="form-group row" ng-if='session.role == "manager"'>
               <label for="itf-availability" class="col-md-2 col-form-label">Availability:</label>
               <div class="col-md-10">
@@ -60,6 +72,10 @@
         </tr>
       </thead>
       <tbody>
+        <!--
+          This ng-repeat defines an entire row for each instrument in the instruments array. Certain actions are only shown for users, and certain actions are obly
+          shown to managers. Values inside of {{}} are interpreted by angular. 
+        -->
         <tr ng-repeat='inst in instruments'>
           <td>{{inst.serial_no}}</td>
           <td>{{inst.type}}</td>

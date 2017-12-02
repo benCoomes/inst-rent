@@ -1,3 +1,5 @@
+// define dependencies the main module
+// other that ngRoute, these are all view controllers
 angular.module('instRent', [
   'ngRoute',
   'instRent.main',
@@ -17,6 +19,7 @@ angular.module('instRent', [
   'instRent.header'
 ])
 
+// define a service to load sessions 
 .factory('sessionLoader', function($http){
   var getSession = function() {
     return $http.get('php/ajax_handlers.php?action=get_session')
@@ -32,12 +35,12 @@ angular.module('instRent', [
 });
 
 
+// define the main module
 angular.module('instRent.main', ['ngRoute'])
-
+// and its controller
 .controller('mainCtrl', function mainCtrl($scope, $rootScope, sessionLoader, $location, $http, $httpParamSerializerJQLike){
   sessionLoader.getSession().then(function(result){
     $rootScope.session = result;
-    // changing location here causes page to go to home on load and reload from anywhere in website
     if(! $rootScope.session.signedIn){
       $location.url('login');
     }
