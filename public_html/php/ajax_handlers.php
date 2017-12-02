@@ -1142,6 +1142,178 @@ class AjaxHandler{
     } 
   }
 
+
+  /*
+    Expects: 
+      Nothing
+    Perminssions: 
+      Admins only
+    Success:
+      Condition: backup tables deleted and restored to current tables
+      Status Code: 200
+    Failure (bad credentials):
+      Status Code: 401
+      Data: username
+  */
+  private function backupDatabase(){
+    $queries = array(
+      "delAC_backup" => "DROP TABLE IF EXISTS active_contracts_backup",
+      "delPC_backup" => "DROP TABLE IF EXISTS pending_contracts_backup",
+      "delUsers_backup" => "DROP TABLE IF EXISTS users_backup",
+      "delInstruments_backup" => "DROP TABLE IF EXISTS instruments_backup",
+      "copyUsers" => "CREATE TABLE users_backup AS SELECT * FROM users",
+      "copyInstruments" => "CREATE TABLE instruments_backup AS SELECT * FROM instruments",
+      "moveAC" => "CREATE TABLE active_contracts_backup AS SELECT * FROM active_contracts",
+      "copyPC" => "CREATE TABLE pending_contracts_backup AS SELECT * FROM pending_contracts"
+    );
+
+    foreach($queries as $name => $sql){
+      $result = $this->conn->query($sql);
+      if(!$result){
+        http_response_code(400);
+        $response = new Response(
+          'Error',
+          'Failed to execute query: '.$name,
+          $this->conn->error
+        );
+        print $response->toJson();
+        return;
+      } 
+    }
+
+    $response = new Response(
+      'Success',
+      'Successfully created backup.'
+    );
+    print $response->toJson();
+    return;
+  }
+
+
+  /*
+    Expects: 
+      Nothing
+    Perminssions: 
+      Admins only
+    Success:
+      Condition: all backup tables found to exist or at least one doesn't
+      Status Code: 200
+    Failure (bad credentials):
+      Status Code: 401
+      Data: username
+  */
+  private function backupExists(){
+    $queries = array(
+      "check_users_backup" => "SELECT 1 FROM users_backup LIMIT 1",
+      "check_instruments_backup" => "SELECT 1 FROM instruments_backup LIMIT 1",
+      "check_active_contracts_backup" => "SELECT 1 FROM active_contracts_backup LIMIT 1",
+      "check_pending_contracts_backup" => "SELECT 1 FROM pending_contracts_backup LIMIT 1"
+    );
+
+    foreach($queries as $name => $sql){
+      $result = $this->conn->query($sql);
+      if(!$result){
+        $response = new Response(
+          'Success',
+          'Backup does not exist.',
+          0
+        );
+        print $response->toJson();
+        return;
+      } 
+    }
+
+    $response = new Response(
+      'Success',
+      'Backup exists.',
+      1
+    );
+    print $response->toJson();
+    return;
+  }
+
+
+  /*
+    Expects: 
+      Nothing
+    Perminssions: 
+      Admins only
+    Success:
+      Condition: all queries execute succssfully and database is restored.
+      Status Code: 200
+    Failure (bad credentials):
+      Status Code: 401
+      Data: username
+  */
+  private function restoreDatabase(){
+    $queries = array(
+      "check_users_backup" => "SELECT 1 FROM users_backup",
+      "check_instruments_backup" => "SELECT 1 FROM instruments_backup",
+      "check_active_contracts_backup" => "SELECT 1 FROM active_contracts_backup",
+      "check_pending_contracts_backup" => "SELECT 1 FROM pending_contracts_backup",
+      "drop_active_contracts" => "DROP TABLE IF EXISTS active_contracts",
+      "drop_pending_contracts" => "DROP TABLE IF EXISTS pending_contracts",
+      "drop_users" => "DROP TABLE IF EXISTS users",
+      "drop_instruments" => "DROP TABLE IF EXISTS instruments",
+      "restore_users" => "CREATE TABLE users(
+          cuid int PRIMARY KEY NOT NULL, 
+          username varchar(20) UNIQUE NOT NULL,
+          password varchar(20) NOT NULL,
+          role enum('user','manager','admin') NOT NULL,
+          first_name varchar(20) NULL,
+          last_name varchar(20) NULL,
+          age int NULL,
+          phone varchar(20) NULL,
+          address varchar(50) NULL,
+          email varchar(40) UNIQUE NOT NULL) 
+        AS SELECT * FROM users_backup",
+    "restore_instruments" => "CREATE TABLE instruments(
+        serial_no varchar(20) PRIMARY KEY NOT NULL, 
+        type varchar(20) NOT NULL, 
+        cond enum('needs repair','poor','fair','good','new')) 
+      AS SELECT * FROM instruments_backup",
+    "restore_active_contracts" => "CREATE TABLE active_contracts(
+        start_date date NOT NULL,
+        end_date date NOT NULL,
+        cuid int NOT NULL,
+        serial_no varchar(20) NOT NULL,
+        CONSTRAINT PK_active_contracts PRIMARY KEY (serial_no),
+        FOREIGN KEY (serial_no) REFERENCES instruments(serial_no),
+        FOREIGN KEY (cuid) REFERENCES users(cuid)) 
+      AS SELECT * FROM active_contracts_backup",
+    "restore_pending_contracts" => "CREATE TABLE pending_contracts(
+        start_date date NOT NULL,
+        end_date date NOT NULL,
+        cuid int NOT NULL,
+        serial_no varchar(20) NOT NULL,
+        CONSTRAINT PK_pending_contracts PRIMARY KEY (serial_no,cuid),
+        FOREIGN KEY (serial_no) REFERENCES instruments(serial_no),
+        FOREIGN KEY (cuid) REFERENCES users(cuid))
+      AS SELECT * FROM pending_contracts_backup",
+    );
+
+    foreach($queries as $name => $sql){
+      $result = $this->conn->query($sql);
+      if(!$result){
+        http_response_code(400);
+        $response = new Response(
+          'Error',
+          'Failed to execute query: '.$name,
+          $this->conn->error
+        );
+        print $response->toJson();
+        return;
+      } 
+    }
+
+    $response = new Response(
+      'Success',
+      'Restored database.'
+    );
+    print $response->toJson();
+    return;
+  }
+
   /*
     Expects: 
       Post with variables 'username' and 'password'
@@ -1460,6 +1632,30 @@ class AjaxHandler{
           $this->endContract();
         } else {
           $this->unauthorized('Only managers can terminate contracts.');
+        }
+        break;
+
+      case "backup_database":
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){
+          $this->backupDatabase();
+        } else {
+          $this->unauthorized();
+        }
+        break;
+
+      case "backup_exists":
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){
+          $this->backupExists();
+        } else {
+          $this->unauthorized();
+        }
+        break;
+
+      case "restore_database":
+        if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){
+          $this->restoreDatabase();
+        } else {
+          $this->unauthorized();
         }
         break;
 

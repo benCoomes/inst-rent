@@ -1,4 +1,25 @@
 <div class="container">
-  <h1>HOME</h1>
-  <h3>{{message}}</h2>
+  <h2 class="mb-4">Welcome, {{session.username}}</h2>
+  
+  <div class="card card-clemson">
+    <h3 class="card-header">Backup and Restore</h3>
+    <div class="card-body">
+      <div class="row mt-4">
+        <div class="col-sm-4">
+          <button class="btn btn-lg btn-success" ng-click="backupDatabase()">Create Backup</button>
+        </div>
+        <div class="col-sm-6">
+          <p>Save the current database state so that it can be restored at a later time. This will overwrite the current backup, if any.</p>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-sm-4">
+          <button class="btn btn-lg btn-clemson-orange" ng-click="restoreDatabase()" ng-disabled="!canRestore">Restore to last Backup</button>
+        </div>
+        <div class="col-sm-6">
+          <p>Restore the database to the most reccent backup. If no backup has ever been made, the database will not be changed. After performing this action, you will be signed out. Be sure that you know the credentials of an admin account for the database backup.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
