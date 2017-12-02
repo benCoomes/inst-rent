@@ -21,7 +21,8 @@ angular.module('instRent.addInstrument', ['ngRoute'])
     if($scope.addInstForm && 
         $scope.addInstForm.serial_no && 
         $scope.addInstForm.type && 
-        $scope.addInstForm.cond){
+        $scope.addInstForm.cond &&
+        $scope.addInstForm.cond != ""){
       $scope.valid = true;
     } else {
       $scope.valid = false;
